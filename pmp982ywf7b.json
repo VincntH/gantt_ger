@@ -4,6 +4,29 @@
     "manager": "",
     "note": ""
   },
-  "tasks": [],
-  "lastUpdated": "2026-05-17"
+  "tasks": [
+    {
+      "id": "mpafudz8lcu",
+      "task": "AA",
+      "asgn": "A",
+      "cont": "AA",
+      "ps": "2026-05-19",
+      "pe": "2026-05-31",
+      "as": "",
+      "ae": "",
+      "stat": "⏳ 未開始"
+    },
+    {
+      "id": "mpag4lk1x7o",
+      "task": "工作",
+      "asgn": "大熊",
+      "cont": "測試",
+      "ps": "2026-05-22",
+      "pe": "2026-07-11",
+      "as": "",
+      "ae": "",
+      "stat": "⏳ 未開始"
+    }
+  ],
+  "lastUpdated": "2026-05-18"
 }
