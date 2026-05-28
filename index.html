@@ -12,7 +12,8 @@
 // ╚══════════════════════════════════════════════════════════════╝
 
 const GITHUB_OWNER = 'VincntH';         // GitHub 帳號名稱
-const GITHUB_REPO  = 'gantt_ger';       // Repository 名稱
+const GITHUB_REPO  = 'gnatt_ger';           // Repository 名稱
+const GITHUB_REPO  = 'gantt_ger';           // Repository 名稱
 
 // ╔══════════════════════════════════════════════════════════════╗
 // ║              以下為程式邏輯，請勿修改                        ║
@@ -141,6 +142,7 @@ tbody tr:last-child td{border-bottom:none}
 ::-webkit-scrollbar-thumb{background:#c8c6c4;border-radius:3px}
 </style>
 
+<!-- ── Header ── -->
 <div class="page-header">
   <div class="ph-left">
     <h1 id="hTitle">載入中…</h1>
@@ -160,6 +162,7 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- ── Main content ── -->
 <div id="mainContent">
   <div class="loading" id="loadingView">
     <div class="spinner"></div>
@@ -167,6 +170,7 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- ── Admin Drawer ── -->
 <div class="drawer-bg" id="drawerBg"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head">
@@ -215,6 +219,7 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- ── 工作項目 Modal ── -->
 <div class="overlay" id="itemOverlay">
   <div class="modal">
     <div class="modal-title" id="itemModalTitle">新增工作項目</div>
@@ -239,6 +244,7 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- ── Confirm Modal ── -->
 <div class="overlay" id="confirmOverlay">
   <div class="confirm-box">
     <p id="confirmMsg">確定嗎？</p>
@@ -249,6 +255,7 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- ── Save Bar ── -->
 <div class="save-bar" id="saveBar"></div>
 
 <script>
@@ -281,27 +288,27 @@ function setToken(t){ try{ t ? localStorage.setItem('gh_gantt_token',t) : localS
 // ── 自動判定工作狀態邏輯 ───────────────────────────────────────
 function getStatus(t) {
   const todayStr = new Date().toISOString().slice(0,10);
-  
+
   // 1. 實際完成日期有資料 -> 顯示 "已完成"
   if (t.ae) {
     return '✅ 已完成';
   }
-  
+
   // 2. 實際開始日期 > 預計開始日期 或 今日日期 > 預計開始日期 且 實際開始日期為空值 -> 顯示 "已延誤"
   if ((t.as && t.as > t.ps) || (!t.as && todayStr > t.ps)) {
     return '⚠️ 已延誤';
   }
-  
+
   // 3. 今日日期 >= 實際開始日期 (且實際開始有值) -> 顯示 "進行中"
   if (t.as && todayStr >= t.as) {
     return '🔄 進行中';
   }
-  
+
   // 4. 今日日期 < 預計開始日期 -> 顯示 "未開始"
   if (todayStr < t.ps) {
     return '⏳ 未開始';
   }
-  
+
   return '⏳ 未開始';
 }
 
@@ -490,6 +497,7 @@ function renderPage(){
   const p = DATA.project;
   const tasks = DATA.tasks;
 
+  // 每次渲染時重新依據最新日期自動判定所有項目的狀態
   tasks.forEach(t => {
     t.stat = getStatus(t);
   });
@@ -596,7 +604,7 @@ function bc(s){
   return 'bu';
 }
 
-// ── 甘特圖繪製 ─────────────────────────────────────────────────
+// ── 甘特圖繪製（起點自動抓最早時間點） ─────────────────────────
 function drawGantt(tasks){
   const elL = document.getElementById('ganttLeft');
   const elR = document.getElementById('ganttRight');
@@ -608,6 +616,7 @@ function drawGantt(tasks){
     tasks.forEach(t=>{ ['ps','pe','as','ae'].forEach(k=>{ if(t[k]) allD.push(new Date(t[k])); }); });
     if(!allD.length){ noData('請填寫日期資料以產生甘特圖'); return; }
 
+    // 起點以工作項目最早的時間點開始（取月份第一天以便對齊刻度）
     let mn=new Date(Math.min(...allD)), mx=new Date(Math.max(...allD));
     mn=new Date(mn.getFullYear(),mn.getMonth(),1);
     mx=new Date(mx.getFullYear(),mx.getMonth()+2,1);
@@ -619,22 +628,24 @@ function drawGantt(tasks){
     const DW=Math.max(4,Math.min(16,(vw-16)/days));
     const CW=days*DW,SH=HH+tasks.length*RH+6;
     const toX=d=>Math.round((new Date(d)-mn)/864e5)*DW;
-    
+
+    // 甘特條顏色依據狀態自動切換
     const clr=(s,actual)=>{
-      if(!actual) return '#c7e0f4'; 
+      if(!actual) return '#c7e0f4'; // 預計時程條一律使用淡藍色
       if(s.includes('已完成'))  return '#107c10';
       if(s.includes('進行中'))return '#0078d4';
-      if(s.includes('已延誤'))  return '#d13438'; 
+      if(s.includes('已延誤'))  return '#d13438'; // 延誤顯示紅色
       if(s.includes('未開始'))return '#ffb900';
       return '#a19f9d';
     };
 
+    // ── 左欄 SVG（工作項目欄位固定） ──
     let L=`<svg xmlns="http://www.w3.org/2000/svg" width="${LW}" height="${SH}" style="font-family:'Segoe UI',Arial,sans-serif;display:block">`;
     L+=`<rect width="${LW}" height="${SH}" fill="#f8f7f6"/>`;
     L+=`<rect x="0" y="0" width="${LW}" height="${HH}" fill="#f0f6ff"/>`;
     L+=`<line x1="0" y1="${HH}" x2="${LW}" y2="${HH}" stroke="#c8c6c4" stroke-width="2"/>`;
     L+=`<text x="${LW/2}" y="${HH/2+5}" text-anchor="middle" font-size="12" font-weight="700" fill="#323130">工作項目 (欄位固定)</text>`;
-    
+
     tasks.forEach((t,i)=>{
       const y=HH+i*RH;
       L+=`<rect x="0" y="${y}" width="${LW}" height="${RH}" fill="${i%2?'#f3f2f1':'#f8f7f6'}"/>`;
@@ -648,11 +659,12 @@ function drawGantt(tasks){
     L+='</svg>';
     elL.innerHTML=L;
 
+    // ── 右側 SVG（時間軸延長可用拉霸延伸檢視） ──
     const RW=CW+16;
     let R=`<svg xmlns="http://www.w3.org/2000/svg" width="${RW}" height="${SH}" style="font-family:'Segoe UI',Arial,sans-serif;display:block">`;
     R+=`<rect width="${RW}" height="${SH}" fill="#fff"/>`;
     tasks.forEach((_,i)=>{ R+=`<rect x="0" y="${HH+i*RH}" width="${RW}" height="${RH}" fill="${i%2?'#f8f7f6':'#fff'}"/>`; });
-    
+
     let c=new Date(mn);
     while(c<mx){
       const n=new Date(c.getFullYear(),c.getMonth()+1,1);
@@ -666,7 +678,7 @@ function drawGantt(tasks){
     }
     R+=`<rect x="0" y="0" width="${RW}" height="${HH}" fill="#f0f6ff"/>`;
     R+=`<line x1="0" y1="${HH}" x2="${RW}" y2="${HH}" stroke="#c8c6c4" stroke-width="2"/>`;
-    
+
     c=new Date(mn);
     while(c<mx){
       const n=new Date(c.getFullYear(),c.getMonth()+1,1);
@@ -683,7 +695,7 @@ function drawGantt(tasks){
       w.setDate(w.getDate()+7);
     }
     R+=`<line x1="0" y1="26" x2="${RW}" y2="26" stroke="#c8c6c4" stroke-width="1"/>`;
-    
+
     tasks.forEach((t,i)=>{
       const y=HH+i*RH;
       R+=`<line x1="0" y1="${y+RH}" x2="${RW}" y2="${y+RH}" stroke="#edebe9" stroke-width="1"/>`;
@@ -700,7 +712,7 @@ function drawGantt(tasks){
         if(bw>28) R+=`<text x="${x1+bw/2}" y="${y+BY2+9}" text-anchor="middle" font-size="8" fill="#fff">實際</text>`;
       }
     });
-    
+
     if(td>=mn&&td<=mx){
       const tx=toX(td);
       R+=`<line x1="${tx}" y1="${HH}" x2="${tx}" y2="${SH}" stroke="#d13438" stroke-width="2" stroke-dasharray="4,3"/>`;
@@ -784,7 +796,7 @@ document.getElementById('projSelect').addEventListener('change', function(){
   if(this.value !== currentId) loadData(this.value);
 });
 
-// ── 工作項目 Modal 控制 ─────────────────────────────────────────
+// ── 工作項目 Modal 控制與嚴格條件驗證 ──────────────────────────
 function openItemModal(id=null){
   editId=id;
   const t=id?DATA.tasks.find(x=>x.id===id):null;
@@ -796,9 +808,10 @@ function openItemModal(id=null){
   document.getElementById('iPE').value  =t?.pe||'';
   document.getElementById('iAS').value  =t?.as||'';
   document.getElementById('iAE').value  =t?.ae||'';
-  
+
+  // 顯示當前判定狀態
   document.getElementById('iStat').value=t ? getStatus(t) : '⏳ 依日期自動判定';
-  
+
   const err=document.getElementById('itemErr'); err.textContent=''; err.classList.remove('show');
   document.getElementById('itemOverlay').classList.add('show');
   setTimeout(()=>document.getElementById('iTask').focus(),100);
@@ -816,34 +829,39 @@ document.getElementById('btnSaveItem').addEventListener('click', async ()=>{
   const as  =document.getElementById('iAS').value;
   const ae  =document.getElementById('iAE').value;
   const err =document.getElementById('itemErr');
-  
+
+  // 條件：預訂開始日期, 預計結束日期是必填欄位
   if(!task||!asgn||!ps||!pe){
     err.textContent='請填寫必填欄位：工作項目、負責人、預計開始與結束日期';
     err.classList.add('show'); return;
   }
-  
+
+  // 條件：預訂結束日期 < 預訂開始日期，不接受，彈出提示調整
   if(pe < ps){
     alert('【不接受的時程設定】\n預計結束日期不能小於預計開始日期！\n請維護者重新調整確認。');
     return;
   }
-  
+
+  // 條件：實際結束日期 < 實際開始日期，不接受，彈出提示調整
   if(as && ae && ae < as){
     alert('【不接受的時程設定】\n實際結束日期不能小於實際開始日期！\n請維護者重新調整確認。');
     return;
   }
-  
+
   err.classList.remove('show');
-  
+
+  // 建立暫存物件以利狀態判定
   const tempTask = { task, asgn, cont:document.getElementById('iCont').value, ps, pe, as, ae };
   const stat = getStatus(tempTask);
+
   const data = { ...tempTask, stat };
-  
+
   if(editId){ 
     Object.assign(DATA.tasks.find(x=>x.id===editId), data); 
   } else { 
     DATA.tasks.push({id: Date.now().toString(36)+Math.random().toString(36).slice(2,5), ...data}); 
   }
-  
+
   closeItemModal();
   await saveData();
 });
