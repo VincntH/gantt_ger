@@ -12,8 +12,7 @@
 // ╚══════════════════════════════════════════════════════════════╝
 
 const GITHUB_OWNER = 'VincntH';         // GitHub 帳號名稱
-const GITHUB_REPO  = 'gnatt_ger';           // Repository 名稱
-const GITHUB_REPO  = 'gantt_ger';           // Repository 名稱
+const GITHUB_REPO  = 'gantt_ger';       // Repository 名稱
 
 // ╔══════════════════════════════════════════════════════════════╗
 // ║              以下為程式邏輯，請勿修改                        ║
@@ -67,6 +66,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;color:#323130;backgr
 
 /* ── Table ── */
 .tcard{background:#fff;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:auto;margin-bottom:16px}
+.tcard::-webkit-scrollbar {height:8px;width:8px}
 .tbar{padding:10px 16px;border-bottom:1px solid #e1dfdd;display:flex;align-items:center;justify-content:space-between}
 .tbar-title{font-size:13px;font-weight:700;color:#201f1e}
 table{width:100%;border-collapse:collapse}
@@ -83,11 +83,14 @@ tbody tr:last-child td{border-bottom:none}
 .bu{background:#edebe9;color:#605e5c}
 
 /* ── Buttons ── */
-.btn{border:1px solid transparent;border-radius:2px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px;font-family:inherit;line-height:1}
-.btn-p{background:#0078d4;color:#fff;border-color:#0078d4}.btn-p:hover{background:#106ebe}
-.btn-o{background:#fff;color:#323130;border-color:#8a8886}.btn-o:hover{background:#f3f2f1}
-.btn-d{background:#fff;color:#a4262c;border:1px solid #d13438}.btn-d:hover{background:#fde7e9}
+.btn{border:1px solid transparent;border-radius:2px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px;font-family:inherit;line-height:1;user-select:none}
+.btn-p{background:#0078d4;color:#fff;border-color:#0078d4}\.btn-p:hover{background:#106ebe}
+.btn-o{background:#fff;color:#323130;border-color:#8a8886}\.btn-o:hover{background:#f3f2f1}
+.btn-d{background:#fff;color:#a4262c;border:1px solid #d13438}\.btn-d:hover{background:#fde7e9}
 .btn-sm{padding:4px 8px;font-size:12px}
+.btn-sort{padding:2px 4px;font-size:11px;line-height:1;background:#fff;border:1px solid #c8c6c4;border-radius:2px;cursor:pointer;margin-right:2px}
+.btn-sort:hover{background:#edebe9}
+.btn-sort:disabled{opacity:0.25;cursor:not-allowed}
 
 /* ── Admin Drawer ── */
 .drawer-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500}
@@ -142,7 +145,6 @@ tbody tr:last-child td{border-bottom:none}
 ::-webkit-scrollbar-thumb{background:#c8c6c4;border-radius:3px}
 </style>
 
-<!-- ── Header ── -->
 <div class="page-header">
   <div class="ph-left">
     <h1 id="hTitle">載入中…</h1>
@@ -162,7 +164,6 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- ── Main content ── -->
 <div id="mainContent">
   <div class="loading" id="loadingView">
     <div class="spinner"></div>
@@ -170,7 +171,6 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- ── Admin Drawer ── -->
 <div class="drawer-bg" id="drawerBg"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head">
@@ -219,7 +219,6 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- ── 工作項目 Modal ── -->
 <div class="overlay" id="itemOverlay">
   <div class="modal">
     <div class="modal-title" id="itemModalTitle">新增工作項目</div>
@@ -244,7 +243,6 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- ── Confirm Modal ── -->
 <div class="overlay" id="confirmOverlay">
   <div class="confirm-box">
     <p id="confirmMsg">確定嗎？</p>
@@ -255,7 +253,6 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- ── Save Bar ── -->
 <div class="save-bar" id="saveBar"></div>
 
 <script>
@@ -492,6 +489,21 @@ function showSaveBar(msg, type){
   if(type !== 'saving') setTimeout(()=>{ el.className='save-bar'; }, 4000);
 }
 
+// ── 任務排序控制（位置交換） ───────────────────────────────────
+async function moveTask(index, direction) {
+  const targetIndex = index + direction;
+  if (targetIndex < 0 || targetIndex >= DATA.tasks.length) return;
+
+  // 資料結構內的位置互換
+  const temp = DATA.tasks[index];
+  DATA.tasks[index] = DATA.tasks[targetIndex];
+  DATA.tasks[targetIndex] = temp;
+
+  // 立即重繪畫面並自動存檔同步雲端
+  renderPage();
+  await saveData();
+}
+
 // ── 渲染主頁面 ─────────────────────────────────────────────────
 function renderPage(){
   const p = DATA.project;
@@ -532,8 +544,14 @@ function renderPage(){
     tbodyHtml = '<tr><td colspan="'+(isAdmin?10:9)+'" style="text-align:center;padding:28px;color:#a19f9d">尚無工作項目</td></tr>';
   } else {
     tbodyHtml = tasks.map(function(t,i){
+      const sortButtons = isAdmin 
+        ? `<button class="btn-sort" title="上移" onclick="moveTask(${i}, -1)" ${i === 0 ? 'disabled' : ''}>▲</button>` +
+          `<button class="btn-sort" title="下移" onclick="moveTask(${i}, 1)" ${i === tasks.length - 1 ? 'disabled' : ''}>▼</button>`
+        : '';
+
       const editTd = isAdmin
         ? '<td style="white-space:nowrap">'
+          + sortButtons
           + '<button class="btn btn-o btn-sm" data-edit="'+t.id+'">✏️</button>'
           + '<button class="btn btn-d btn-sm" style="margin-left:3px" data-del="'+t.id+'">🗑️</button>'
           + '</td>'
