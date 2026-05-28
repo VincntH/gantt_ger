@@ -3,18 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>專案甘特圖</title>
+<title>互動式專案管理甘特圖</title>
 </head>
 <body>
 <script>
 // ╔══════════════════════════════════════════════════════════════╗
-// ║       ★★★  設定區  ──  首次部署時填寫這兩行  ★★★          ║\n// ╚══════════════════════════════════════════════════════════════╝
+// ║       ★★★  設定區  ──  首次部署時填寫這兩行  ★★★          ║
+// ╚══════════════════════════════════════════════════════════════╝
 
 const GITHUB_OWNER = 'VincntH';         // GitHub 帳號名稱
 const GITHUB_REPO  = 'gantt_ger';       // Repository 名稱
 
 // ╔══════════════════════════════════════════════════════════════╗
-// ║              以下為程式邏輯，請勿修改                        ║\n// ╚══════════════════════════════════════════════════════════════╝
+// ║              以下為程式邏輯，請勿修改                        ║
+// ╚══════════════════════════════════════════════════════════════╝
 </script>
 
 <style>
@@ -22,884 +24,853 @@ const GITHUB_REPO  = 'gantt_ger';       // Repository 名稱
 body{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;color:#323130;background:#f3f2f1;min-height:100vh}
 
 /* ── Header ── */
-.page-header{background:#0078d4;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
-.header-left{display:flex;align-items:center;gap:15px}
-.header-title{font-size:18px;font-weight:600;letter-spacing:0.5px}
-.project-selector{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);padding:6px 12px;border-radius:4px;font-size:14px;cursor:pointer;outline:none;transition:background 0.2s}
-.project-selector:hover{background:rgba(255,255,255,0.25)}
-.project-selector option{color:#323130;background:#fff}
-.header-right{display:flex;align-items:center;gap:10px}
+.page-header{background:#0078d4;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.ph-left h1{font-size:15px;font-weight:700;margin-bottom:2px}
+.ph-left p{font-size:11px;opacity:.8}
+.ph-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;min-width:160px}
+.proj-sel{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:4px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer;max-width:220px;width:100%}
+.proj-sel option{color:#323130;background:#fff}
+.proj-sel:focus{outline:none;border-color:rgba(255,255,255,.8)}
+.ph-right{display:flex;align-items:center;gap:8px}
+.ph-meta{font-size:11px;opacity:.75;text-align:right;line-height:1.5}
+.btn-admin{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:3px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.btn-admin:hover{background:rgba(255,255,255,.25)}
+.admin-badge{background:#fff;color:#0078d4;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;display:none}
+.admin-badge.show{display:inline}
 
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;font-size:14px;border-radius:4px;border:1px solid transparent;cursor:pointer;font-weight:500;transition:all 0.15s ease;gap:4px;user-select:none}
-.btn-primary{background:#0078d4;color:#fff}
-.btn-primary:hover{background:#106ebe}
-.btn-light{background:#fff;color:#323130;border-color:#ccc1b9}
-.btn-light:hover{background:#f3f2f1;border-color:#a19f9d}
-.btn-danger{background:#a80000;color:#fff}
-.btn-danger:hover{background:#8a0000}
-.btn-icon{padding:4px 8px;font-size:12px;border-radius:4px}
-.btn-icon:disabled{opacity:0.3;cursor:not-allowed}
+/* ── Loading / Error ── */
+.loading{display:flex;align-items:center;justify-content:center;height:60vh;flex-direction:column;gap:14px;color:#605e5c}
+.spinner{width:36px;height:36px;border:3px solid #e1dfdd;border-top-color:#0078d4;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err-box{background:#fde7e9;border:1px solid #f4b8bb;border-radius:3px;padding:166px 20px;color:#a4262c;max-width:520px;margin:40px auto;text-align:center;line-height:1.6}
 
-/* ── Layout ── */
-.main-container{padding:20px;max-width:1600px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-.dashboard-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
-.card{background:#fff;border-radius:6px;box-shadow:0 1.6px 3.6px rgba(0,0,0,0.13),0 0.3px 0.9px rgba(0,0,0,0.11);padding:15px;display:flex;flex-direction:column;gap:5px}
-.card-label{font-size:12px;color:#605e5c;font-weight:600;text-transform:uppercase}
-.card-val{font-size:18px;font-weight:600;color:#323130;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ── Content ── */
+.content{padding:18px 24px;max-width:1600px}
+.stats{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.stat{background:#fff;border-radius:3px;padding:11px 16px;flex:1;min-width:100px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-top:3px solid #e1dfdd;text-align:center}
+.stat.s1{border-top-color:#107c10}.stat.s2{border-top-color:#0078d4}
+.stat.s3{border-top-color:#d13438}.stat.s4{border-top-color:#ffb900}
+.stat-n{font-size:22px;font-weight:700;line-height:1}
+.stat-l{font-size:11px;color:#605e5c;margin-top:3px}
 
-/* ── Split Panel ── */
-.panel-box{background:#fff;border-radius:6px;box-shadow:0 1.6px 3.6px rgba(0,0,0,0.13),0 0.3px 0.9px rgba(0,0,0,0.11);overflow:hidden;display:flex;flex-direction:column}
-.panel-header{background:#faf9f8;padding:12px 20px;border-bottom:1px solid #edebe9;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.panel-title{font-size:15px;font-weight:600;color:#323130}
+/* ── Gantt ── */
+.gcrd{background:#fff;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;margin-bottom:16px}
+.gtb{padding:10px 16px;border-bottom:1px solid #e1dfdd;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.gtb-title{font-size:13px;font-weight:700;color:#201f1e}
+.gleg{display:flex;flex-wrap:wrap;gap:12px;margin-left:auto}
+.gli{display:flex;align-items:center;gap:5px;font-size:11px;color:#605e5c}
+.glb{width:20px;height:8px;border-radius:2px}
+.gscroll{display:flex;overflow:hidden}
+.gantt-left{flex-shrink:0;overflow:hidden}
+.gantt-right{flex:1;overflow-x:auto}
 
 /* ── Table ── */
-.table-wrapper{overflow-x:auto;width:100%}
-.data-table{width:100%;border-collapse:collapse;text-align:left;min-width:700px}
-.data-table th{background:#f3f2f1;color:#323130;font-weight:600;padding:10px 12px;border-bottom:2px solid #edebe9;font-size:13px}
-.data-table td{padding:10px 12px;border-bottom:1px solid #edebe9;font-size:13px;vertical-align:middle}
-.data-table tbody tr:hover{background:#f3f2f1/50}
+.tcard{background:#fff;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:auto;margin-bottom:16px}
+.tbar{padding:10px 16px;border-bottom:1px solid #e1dfdd;display:flex;align-items:center;justify-content:space-between}
+.tbar-title{font-size:13px;font-weight:700;color:#201f1e}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#faf9f8;border-bottom:2px solid #e1dfdd}
+th{padding:9px 11px;text-align:left;font-size:12px;font-weight:600;color:#605e5c;white-space:nowrap}
+td{padding:8px 11px;border-bottom:1px solid #f3f2f1;font-size:13px;vertical-align:middle}
+tbody tr:hover td{background:#faf9f8}
+tbody tr:last-child td{border-bottom:none}
 
-/* ── Status Badge ── */
-.badge{display:inline-flex;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600}
-.badge-gray{background:#edebe9;color:#323130}
-.badge-blue{background:#c7e0f4;color:#004578}
-.badge-green{background:#dff6dd;color:#107c41}
-.badge-red{background:#fde7e9;color:#a80000}
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
+.bd{background:#dff6dd;color:#107c10}.bp{background:#cce4f7;color:#005a9e}
+.bo{background:#fde7e9;color:#a4262c}.bn{background:#fff4ce;color:#7d6300}
+.bu{background:#edebe9;color:#605e5c}
 
-/* ── Gantt Chart ── */
-.gantt-container{padding:20px;overflow-x:auto}
-.gantt-wrapper{min-width:800px;position:relative}
-.gantt-header-row{display:flex;border-bottom:2px solid #edebe9;background:#f3f2f1}
-.gantt-label-col-h{width:220px;min-width:220px;padding:10px;font-weight:600;border-right:1px solid #edebe9}
-.gantt-months-h{display:flex;flex-grow:1}
-.gantt-month-box{text-align:center;padding:10px 0;font-weight:600;font-size:13px;border-right:1px solid #edebe9;position:relative}
-.gantt-weeks-sub{display:flex;border-top:1px solid #edebe9;font-size:11px;color:#605e5c}
-.gantt-week-box{flex:1;text-align:center;padding:4px 0;border-right:1px solid #f3f2f1}
-.gantt-week-box:last-child{border-right:none}
+/* ── Buttons ── */
+.btn{border:1px solid transparent;border-radius:2px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px;font-family:inherit;line-height:1}
+.btn-p{background:#0078d4;color:#fff;border-color:#0078d4}.btn-p:hover{background:#106ebe}
+.btn-o{background:#fff;color:#323130;border-color:#8a8886}.btn-o:hover{background:#f3f2f1}
+.btn-d{background:#fff;color:#a4262c;border:1px solid #d13438}.btn-d:hover{background:#fde7e9}
+.btn-sm{padding:4px 8px;font-size:12px}
 
-.gantt-row{display:flex;border-bottom:1px solid #edebe9;align-items:stretch}
-.gantt-row:hover{background:#faf9f8}
-.gantt-label-col{width:220px;min-width:220px;padding:12px 10px;border-right:1px solid #edebe9;display:flex;flex-direction:column;gap:3px;background:#fff;position:sticky;left:0;z-index:2}
-.gantt-task-name{font-weight:600;color:#323130}
-.gantt-task-meta{font-size:11px;color:#605e5c}
-.gantt-timeline-col{flex-grow:1;position:relative;background-image:linear-gradient(to right, #edebe9 1px, transparent 1px);background-size:calc(100% / var(--total-weeks)) 100%}
+/* ── Admin Drawer ── */
+.drawer-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500}
+.drawer-bg.show{display:block}
+.drawer{position:fixed;top:0;right:-400px;width:380px;height:100vh;background:#fff;box-shadow:-4px 0 20px rgba(0,0,0,.2);z-index:501;transition:right .25s ease;display:flex;flex-direction:column}
+.drawer.open{right:0}
+.drawer-head{background:#0078d4;color:#fff;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.drawer-head h3{font-size:15px;font-weight:700}
+.drawer-close{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:0 4px}
+.drawer-body{flex:1;overflow-y:auto;padding:18px}
+.dfield{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.dfield label{font-size:12px;font-weight:600;color:#605e5c}
+.dfield input,.dfield select{padding:7px 9px;border:1px solid #8a8886;border-radius:2px;font-size:13px;font-family:inherit;width:100%}
+.dfield input:focus,.dfield select:focus{outline:none;border-color:#0078d4;box-shadow:0 0 0 2px rgba(0,120,212,.15)}
+.dfield .hint{font-size:11px;color:#605e5c;margin-top:2px}
+.token-status{font-size:12px;padding:8px 10px;border-radius:3px;margin-bottom:12px}
+.token-ok{background:#dff6dd;color:#107c10}
+.token-no{background:#fff4ce;color:#7d6300}
+.d-section{font-size:11px;font-weight:700;color:#a19f9d;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e1dfdd;margin-top:4px}
 
-/* Bars */
-.gantt-bar-container{position:relative;height:100%;min-height:50px;display:flex;flex-direction:column;justify-content:center;padding:6px 0}
-.gantt-bar{height:20px;border-radius:4px;position:absolute;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:500;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.15);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.bar-plan{background:#0078d4;top:6px}
-.bar-act{background:#107c41;bottom:6px}
-.gantt-bar:hover{filter:brightness(1.08);box-shadow:0 2px 5px rgba(0,0,0,0.25);z-index:5}
+/* ── Modal ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:600;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:4px;padding:24px;width:540px;max-width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.25)}
+.modal-title{font-size:16px;font-weight:700;color:#201f1e;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid #e1dfdd}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fgi{display:flex;flex-direction:column;gap:4px}
+.fgi.s2{grid-column:1/-1}
+.fgi label{font-size:12px;font-weight:600;color:#605e5c}
+.req{color:#d13438;margin-left:2px}
+.fgi input,.fgi select,.fgi textarea{padding:7px 9px;border:1px solid #8a8886;border-radius:2px;font-size:13px;font-family:inherit}
+.fgi input:focus,.fgi select:focus,.fgi textarea:focus{outline:none;border-color:#0078d4;box-shadow:0 0 0 2px rgba(0,120,212,.15)}
+.fgi textarea{resize:vertical;min-height:54px}
+.mfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:12px;border-top:1px solid #e1dfdd}
+.merr{grid-column:1/-1;color:#d13438;font-size:12px;padding:6px 10px;background:#fde7e9;border-radius:2px;display:none}
+.merr.show{display:block}
 
-/* ── Admin Sidebar Drawer ── */
-.drawer-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:200;opacity:0;visibility:hidden;transition:all 0.25s ease}
-.drawer-overlay.show{opacity:1;visibility:visible}
-.drawer{position:fixed;top:0;right:-450px;width:450px;max-width:100%;height:100%;background:#fff;z-index:201;box-shadow:-4px 0 15px rgba(0,0,0,0.15);display:flex;flex-direction:column;transition:right 0.25s ease}
-.drawer.show{right:0}
-.drawer-header{background:#f3f2f1;padding:15px 20px;border-bottom:1px solid #edebe9;display:flex;align-items:center;justify-content:space-between}
-.drawer-title{font-size:16px;font-weight:600;color:#323130}
-.drawer-close{background:none;border:none;font-size:20px;cursor:pointer;color:#605e5c}
-.drawer-close:hover{color:#323130}
-.drawer-body{padding:20px;flex-grow:1;overflow-y:auto;display:flex;flex-direction:column;gap:15px}
+/* ── Confirm ── */
+.confirm-box{background:#fff;border-radius:4px;padding:24px;width:320px;max-width:95%;box-shadow:0 8px 32px rgba(0,0,0,.25);text-align:center}
+.confirm-box p{font-size:14px;color:#323130;margin-bottom:18px;line-height:1.6}
+.confirm-acts{display:flex;justify-content:center;gap:10px}
 
-/* ── Forms ── */
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group label{font-size:12px;font-weight:600;color:#323130}
-.form-ctrl{width:100%;padding:8px 10px;border:1px solid #a19f9d;border-radius:4px;font-size:14px;outline:none;font-family:inherit}
-.form-ctrl:focus{border-color:#0078d4;box-shadow:0 0 0 2px rgba(0,120,212,0.2)}
-.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form-actions{padding:15px 20px;border-top:1px solid #edebe9;background:#faf9f8;display:flex;justify-content:flex-end;gap:10px}
+/* ── Save Bar ── */
+.save-bar{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:4px;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:700;transition:opacity .3s;display:none}
+.save-bar.show{display:block}
+.save-bar.saving{background:#0078d4;color:#fff}
+.save-bar.ok{background:#107c10;color:#fff}
+.save-bar.fail{background:#d13438;color:#fff}
 
-/* ── Modals ── */
-.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all 0.2s ease}
-.modal-overlay.show{opacity:1;visibility:visible}
-.modal-box{background:#fff;border-radius:6px;width:500px;max-width:95%;box-shadow:0 8px 32px rgba(0,0,0,0.24);overflow:hidden;display:flex;flex-direction:column}
-.modal-header{padding:15px 20px;background:#f3f2f1;border-bottom:1px solid #edebe9;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center}
-.modal-body{padding:20px;display:flex;flex-direction:column;gap:15px;max-height:75vh;overflow-y:auto}
-.modal-footer{padding:12px 20px;background:#faf9f8;border-top:1px solid #edebe9;display:flex;justify-content:flex-end;gap:10px}
-.err-msg{color:#a80000;font-size:12px;display:none;font-weight:500}
-.err-msg.show{display:block}
-
-/* ── Toast ── */
-.toast{position:fixed;bottom:20px;right:20px;background:#323130;color:#fff;padding:12px 24px;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:1000;display:flex;align-items:center;gap:10px;transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1)}
-.toast.show{transform:translateY(0);opacity:1}
-
-/* ── Action Cell Sorting Group ── */
-.action-cell{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
-.sort-group{display:inline-flex;flex-direction:column;gap:2px;margin-right:4px}
-.btn-sort{padding:1px 4px;font-size:9px;line-height:1;background:#faf9f8;border:1px solid #edebe9;border-radius:2px;cursor:pointer}
-.btn-sort:hover{background:#edebe9}
-.btn-sort:disabled{opacity:0.2;cursor:not-allowed}
-
-/* ── Helpers ── */
-.text-center{text-align:center}
-.hidden{display:none !important}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#c8c6c4;border-radius:3px}
 </style>
 
-<header class="page-header">
-  <div class="header-left">
-    <span class="header-title">📋 Project Gantt Pro</span>
-    <select id="projSelect" class="project-selector" onchange="switchProject(this.value)">
-      <option value="">載入中...</option>
+<div class="page-header">
+  <div class="ph-left">
+    <h1 id="hTitle">載入中…</h1>
+    <p id="hMeta"></p>
+  </div>
+  <div class="ph-center">
+    <select id="projSelect" class="proj-sel" title="切換專案">
+      <option>讀取中…</option>
     </select>
   </div>
-  <div class="header-right">
-    <button id="btnAdminToggle" class="btn btn-light" onclick="toggleAdminDrawer()">🔒 Admin</button>
+  <div class="ph-right">
+    <div class="ph-meta" id="hRight"></div>
+    <button class="btn-admin" id="btnAdminOpen">
+      🔒 <span id="adminLabel">Admin</span>
+      <span class="admin-badge" id="adminBadge">編輯中</span>
+    </button>
   </div>
-</header>
-
-<div class="main-container">
-  <section class="dashboard-grid">
-    <div class="card">
-      <span class="card-label">專案負責人</span>
-      <span id="dbManager" class="card-val">-</span>
-    </div>
-    <div class="card">
-      <span class="card-label">工作項目統計</span>
-      <span id="dbCount" class="card-val">-</span>
-    </div>
-    <div class="card">
-      <span class="card-label">最後更新時間</span>
-      <span id="dbUpdated" class="card-val">-</span>
-    </div>
-  </section>
-
-  <section class="panel-box">
-    <div class="panel-header">
-      <span class="panel-title">📊 進度時程甘特圖 (橫軸：週次)</span>
-    </div>
-    <div id="ganttContainer" class="gantt-container">
-      </div>
-  </section>
-
-  <section class="panel-box">
-    <div class="panel-header">
-      <span class="panel-title">📝 工作清單明細</span>
-      <button id="btnAddTask" class="btn btn-primary btn-icon hidden" onclick="openItemModal()">➕ 新增工作項目</button>
-    </div>
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="width:120px">操作 / 排序</th>
-            <th>工作項目</th>
-            <th>負責人</th>
-            <th>預計時程</th>
-            <th>實際時程</th>
-            <th style="width:100px">狀態</th>
-          </tr>
-        </thead>
-        <tbody id="taskTableBody">
-          <tr><td colspan="6" class="text-center">請先登入 Admin 或選擇專案</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
 </div>
 
-<div id="drawerOverlay" class="drawer-overlay" onclick="toggleAdminDrawer()"></div>
-<div id="adminDrawer" class="drawer">
-  <div class="drawer-header">
-    <span class="drawer-title">🛠️ 平台管理員控制台</span>
-    <button class="drawer-close" onclick="toggleAdminDrawer()">&times;</button>
+<div id="mainContent">
+  <div class="loading" id="loadingView">
+    <div class="spinner"></div>
+    <span>讀取資料中…</span>
+  </div>
+</div>
+
+<div class="drawer-bg" id="drawerBg"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>🔐 Admin 管理模式</h3>
+    <button class="drawer-close" id="drawerClose">✕</button>
   </div>
   <div class="drawer-body">
-    <div id="loginForm" class="form-group">
-      <label>GitHub Personal Access Token (PAT)</label>
-      <input type="password" id="inputToken" class="form-ctrl" placeholder="請貼入 ghp_ 開頭的金鑰">
-      <button class="btn btn-primary" style="margin-top:10px" onclick="handleLogin()">儲存並登入</button>
+    <div id="tokenStatus" class="token-status token-no">尚未登入，請輸入 GitHub Token</div>
+
+    <div class="d-section">GitHub Token 設定</div>
+    <div class="dfield">
+      <label>Personal Access Token</label>
+      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx">
+      <div class="hint">Token 只存在你的瀏覽器，不會上傳</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <button class="btn btn-p" style="flex:1" id="btnTokenSave">✅ 儲存並登入</button>
+      <button class="btn btn-o" id="btnTokenClear">🚪 登出</button>
     </div>
 
-    <div id="adminActions" class="hidden" style="display:flex; flex-direction:column; gap:15px">
-      <div style="background:#f3f2f1; padding:10px; border-radius:4px; font-size:12px; color:#605e5c">
-        🔑 已驗證管理員身分。您現在具備資料讀寫權限。
+    <div class="d-section">新增專案</div>
+    <div class="dfield">
+      <label>專案名稱</label>
+      <input type="text" id="dNewProjName" placeholder="例：醫院新建工程">
+    </div>
+    <button class="btn btn-p" style="width:100%;margin-bottom:20px" id="btnCreateProj">＋ 建立新專案</button>
+
+    <div class="d-section">目前專案設定</div>
+    <div class="dfield">
+      <label>專案名稱</label>
+      <input type="text" id="dProjName" placeholder="請輸入專案名稱">
+    </div>
+    <div class="dfield">
+      <label>專案負責人</label>
+      <input type="text" id="dProjMgr" placeholder="請輸入負責人">
+    </div>
+    <div class="dfield">
+      <label>備註說明</label>
+      <input type="text" id="dProjNote" placeholder="選填">
+    </div>
+    <button class="btn btn-p" style="width:100%;margin-bottom:8px" id="btnProjSave">💾 儲存專案設定</button>
+    <button class="btn btn-d" style="width:100%;margin-bottom:20px" id="btnDeleteProj">🗑️ 刪除此專案</button>
+
+    <div class="d-section">工作項目</div>
+    <button class="btn btn-p" style="width:100%" id="btnNewItem">＋ 新增工作項目</button>
+  </div>
+</div>
+
+<div class="overlay" id="itemOverlay">
+  <div class="modal">
+    <div class="modal-title" id="itemModalTitle">新增工作項目</div>
+    <div class="fg">
+      <div class="merr" id="itemErr"></div>
+      <div class="fgi"><label>工作項目<span class="req">*</span></label><input type="text" id="iTask" placeholder="例：需求分析"></div>
+      <div class="fgi"><label>負責人<span class="req">*</span></label><input type="text" id="iAsgn"></div>
+      <div class="fgi s2"><label>工作內容說明</label><textarea id="iCont" placeholder="選填"></textarea></div>
+      <div class="fgi"><label>預計開始<span class="req">*</span></label><input type="date" id="iPS"></div>
+      <div class="fgi"><label>預計結束<span class="req">*</span></label><input type="date" id="iPE"></div>
+      <div class="fgi"><label>實際開始</label><input type="date" id="iAS"></div>
+      <div class="fgi"><label>實際結束</label><input type="date" id="iAE"></div>
+      <div class="fgi s2">
+        <label>狀態（系統依據日期自動判定）</label>
+        <input type="text" id="iStat" disabled style="background:#edebe9;color:#605e5c;font-weight:bold;padding:7px 9px;border:1px solid #8a8886;border-radius:2px;">
       </div>
-      <button class="btn btn-light" onclick="openProjModal()">📁 管理/新增專案庫</button>
-      <div style="border-top:1px solid #edebe9; padding-top:15px" class="form-group">
-        <label>本專案主負責人</label>
-        <input type="text" id="editManager" class="form-ctrl">
-      </div>
-      <div class="form-group">
-        <label>專案備註 / 說明</label>
-        <textarea id="editNote" class="form-ctrl" rows="3"></textarea>
-      </div>
-      <button class="btn btn-primary" onclick="saveProjectMeta()">💾 儲存專案資訊</button>
-      <button class="btn btn-danger" style="margin-top:20px" onclick="handleLogout()">🚪 登出管理員</button>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-o" id="btnCancelItem">取消</button>
+      <button class="btn btn-p" id="btnSaveItem">儲存</button>
     </div>
   </div>
 </div>
 
-<div id="itemModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span id="modalTitle">工作項目編輯</span>
-      <button class="drawer-close" onclick="closeItemModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div id="itemErr" class="err-msg"></div>
-      <div class="form-group">
-        <label>工作項目名稱 *</label>
-        <input type="text" id="iTask" class="form-ctrl">
-      </div>
-      <div class="form-group">
-        <label>主責人員 *</label>
-        <input type="text" id="iAsgn" class="form-ctrl">
-      </div>
-      <div class="form-row-2">
-        <div class="form-group">
-          <label>預計開始 *</label>
-          <input type="date" id="iPS" class="form-ctrl">
-        </div>
-        <div class="form-group">
-          <label>預計結束 *</label>
-          <input type="date" id="iPE" class="form-ctrl">
-        </div>
-      </div>
-      <div class="form-row-2">
-        <div class="form-group">
-          <label>實際開始</label>
-          <input type="date" id="iAS" class="form-ctrl">
-        </div>
-        <div class="form-group">
-          <label>實際結束</label>
-          <input type="date" id="iAE" class="form-ctrl">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>當前進度狀態</label>
-        <select id="iStat" class="form-ctrl">
-          <option value="未開始">⚪ 未開始</option>
-          <option value="進行中">🔵 進行中</option>
-          <option value="已完成">🟢 已完成</option>
-          <option value="延宕">🔴 延宕</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>備註說明</label>
-        <input type="text" id="iCont" class="form-ctrl">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-light" onclick="closeItemModal()">取消</button>
-      <button id="btnSaveItem" class="btn btn-primary">儲存工作</button>
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <p id="confirmMsg">確定嗎？</p>
+    <div class="confirm-acts">
+      <button class="btn btn-o" id="btnConfNo">取消</button>
+      <button class="btn btn-d" id="btnConfYes">確定</button>
     </div>
   </div>
 </div>
 
-<div id="projModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span>管理專案庫清單</span>
-      <button class="drawer-close" onclick="closeProjModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div id="projErr" class="err-msg"></div>
-      <div style="background:#f3f2f1; padding:12px; border-radius:4px" class="form-group">
-        <strong style="font-size:13px">➕ 新增全新專案</strong>
-        <div style="display:flex; gap:8px; margin-top:6px">
-          <input type="text" id="newProjName" class="form-ctrl" placeholder="請輸入新專案名稱">
-          <button class="btn btn-primary" onclick="createNewProjectSubmit()">新增</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>現有專案列表 (點擊可進行刪除)</label>
-        <div id="projListContainer" style="display:flex; flex-direction:column; gap:6px; margin-top:5px">
-          </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-light" onclick="closeProjModal()">關閉</button>
-    </div>
-  </div>
-</div>
-
-<div id="confirmOverlay" class="modal-overlay" style="z-index:1000">
-  <div class="modal-box" style="width:360px">
-    <div class="modal-header">⚠️ 請確認操作</div>
-    <div id="confirmMsg" class="modal-body" style="font-size:14px; padding:20px"></div>
-    <div class="modal-footer">
-      <button id="btnConfNo" class="btn btn-light">取消</button>
-      <button id="btnConfYes" class="btn btn-danger">確定</button>
-    </div>
-  </div>
-</div>
-
-<div id="toast" class="toast"></div>
+<div class="save-bar" id="saveBar"></div>
 
 <script>
-// ── 全局核心變數 ───────────────────────────────────────────────
-let TOKEN = localStorage.getItem('gantt_pat') || '';
-let PROJECTS_INDEX = null; 
-let DATA = null;           
-let CURRENT_PROJECT_ID = 'data'; 
-let editId = null;         
-let confirmCb = null;      
+'use strict';
 
+// ── URL 與 API 輔助 ────────────────────────────────────────────
 const rawBase = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main`;
 const apiBase = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`;
 
-// ── 初始化啟動 ─────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', async ()=>{
-  if(TOKEN) showAdminUI();
-  await loadProjectsIndex();
-});
+const dataUrl = id => `${rawBase}/${id}.json`;
+const apiUrl  = id => `${apiBase}/${id}.json`;
+const PROJ_INDEX_RAW = `${rawBase}/projects.json`;
+const PROJ_INDEX_API = `${apiBase}/projects.json`;
 
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3000);
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const uid = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,4);
+
+// ── State ──────────────────────────────────────────────────────
+let PROJECTS = [];           // [{id, name}]
+let currentId = 'data';     // 目前選中的專案 ID
+let DATA = { project:{name:'',manager:'',note:''}, tasks:[], lastUpdated:'' };
+let editId = null;
+let confirmCb = null;
+let isAdmin = false;
+
+// ── Token 管理 ─────────────────────────────────────────────────
+function getToken(){ try{ return localStorage.getItem('gh_gantt_token')||''; }catch(e){ return ''; } }
+function setToken(t){ try{ t ? localStorage.setItem('gh_gantt_token',t) : localStorage.removeItem('gh_gantt_token'); }catch(e){} }
+
+// ── 自動判定工作狀態邏輯 ───────────────────────────────────────
+function getStatus(t) {
+  const todayStr = new Date().toISOString().slice(0,10);
+  
+  // 1. 實際完成日期有資料 -> 顯示 "已完成"
+  if (t.ae) {
+    return '✅ 已完成';
+  }
+  
+  // 2. 實際開始日期 > 預計開始日期 或 今日日期 > 預計開始日期 且 實際開始日期為空值 -> 顯示 "已延誤"
+  if ((t.as && t.as > t.ps) || (!t.as && todayStr > t.ps)) {
+    return '⚠️ 已延誤';
+  }
+  
+  // 3. 今日日期 >= 實際開始日期 (且實際開始有值) -> 顯示 "進行中"
+  if (t.as && todayStr >= t.as) {
+    return '🔄 進行中';
+  }
+  
+  // 4. 今日日期 < 預計開始日期 -> 顯示 "未開始"
+  if (todayStr < t.ps) {
+    return '⏳ 未開始';
+  }
+  
+  return '⏳ 未開始';
 }
 
-// ── 讀取專案索引 ───────────────────────────────────────────────
-async function loadProjectsIndex(){
-  try{
-    const res = await fetch(`${rawBase}/projects.json?t=${Date.now()}`);
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    PROJECTS_INDEX = await res.json();
-    renderProjectSelector();
-    if(PROJECTS_INDEX.projects && PROJECTS_INDEX.projects.length > 0){
-      let target = PROJECTS_INDEX.projects[0].id;
-      if(PROJECTS_INDEX.projects.some(p=>p.id===CURRENT_PROJECT_ID)) target = CURRENT_PROJECT_ID;
-      await switchProject(target);
+// ── 專案清單讀取 ───────────────────────────────────────────────
+async function loadProjects(){
+  try {
+    const res = await fetch(PROJ_INDEX_RAW + '?t=' + Date.now());
+    if(res.ok){
+      const idx = await res.json();
+      PROJECTS = idx.projects || [];
     }
-  }catch(e){
-    document.getElementById('taskTableBody').innerHTML = `<tr><td colspan="6" class="text-center" style="color:#a80000; font-weight:600">無法讀取專案索引：projects.json 錯誤 (${e.message})</td></tr>`;
-  }
+  } catch(e){}
+
+  if(!PROJECTS.length) PROJECTS = [{id:'data', name:'預設專案'}];
+
+  const saved = localStorage.getItem('gh_gantt_proj');
+  if(saved && PROJECTS.find(p=>p.id===saved)) currentId = saved;
+  else currentId = PROJECTS[0].id;
+
+  renderProjSelect();
 }
 
-function renderProjectSelector(){
-  const s = document.getElementById('projSelect');
-  s.innerHTML = '';
-  PROJECTS_INDEX.projects.forEach(p=>{
-    const opt = document.createElement('option');
-    opt.value = p.id; opt.textContent = p.name;
-    if(p.id === CURRENT_PROJECT_ID) opt.selected = true;
-    s.appendChild(opt);
-  });
+// ── 專案清單儲存 ───────────────────────────────────────────────
+async function saveProjects(){
+  const token = getToken();
+  if(!token) return;
+  try {
+    let sha = '';
+    const metaRes = await fetch(PROJ_INDEX_API, {
+      headers:{ 'Authorization':'token '+token, 'Accept':'application/vnd.github.v3+json' }
+    });
+    if(metaRes.ok){ const m = await metaRes.json(); sha = m.sha||''; }
+
+    const idx = { projects: PROJECTS, lastUpdated: new Date().toISOString().slice(0,10) };
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(idx, null, 2))));
+    const body = { message:'更新專案索引', content };
+    if(sha) body.sha = sha;
+
+    await fetch(PROJ_INDEX_API, {
+      method:'PUT',
+      headers:{ 'Authorization':'token '+token, 'Content-Type':'application/json', 'Accept':'application/vnd.github.v3+json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e){}
 }
 
-async function switchProject(id){
-  if(!id) return;
-  CURRENT_PROJECT_ID = id;
-  document.getElementById('taskTableBody').innerHTML = `<tr><td colspan="6" class="text-center">專案資料載入中...</td></tr>`;
-  try{
-    const res = await fetch(`${rawBase}/${id}.json?t=${Date.now()}`);
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+// ── 渲染下拉選單 ───────────────────────────────────────────────
+function renderProjSelect(){
+  const sel = document.getElementById('projSelect');
+  sel.innerHTML = PROJECTS.map(p =>
+    `<option value="${p.id}" ${p.id===currentId?'selected':''}>${esc(p.name)}</option>`
+  ).join('');
+}
+
+// ── 資料讀取 ───────────────────────────────────────────────────
+async function loadData(id){
+  currentId = id;
+  localStorage.setItem('gh_gantt_proj', id);
+  document.getElementById('mainContent').innerHTML =
+    '<div class="loading"><div class="spinner"></div><span>讀取資料中…</span></div>';
+  try {
+    const res = await fetch(dataUrl(id) + '?t=' + Date.now());
+    if(!res.ok) throw new Error('HTTP ' + res.status);
     DATA = await res.json();
-    if(!DATA.tasks) DATA.tasks = [];
-    
-    // 同步填入後台表單
-    document.getElementById('editManager').value = DATA.project?.manager || '';
-    document.getElementById('editNote').value = DATA.project?.note || '';
-    
-    renderDashboard();
-    renderTable();
-    renderGantt();
-  }catch(e){
-    document.getElementById('taskTableBody').innerHTML = `<tr><td colspan="6" class="text-center" style="color:#a80000">無法讀取專案資料<br>找不到 ${id}.json，請確認檔案已上傳至 Repository。<br>錯誤訊息：${e.message}</td></tr>`;
+    renderPage();
+  } catch(e) {
+    document.getElementById('mainContent').innerHTML =
+      `<div class="err-box">
+        <strong>⚠️ 無法讀取專案資料</strong><br><br>
+        找不到 <code>${id}.json</code>，請確認檔案已上傳至 Repository。<br><br>
+        <small>錯誤訊息：${esc(e.message)}</small>
+      </div>`;
   }
 }
 
-// ── 渲染儀表板 ─────────────────────────────────────────────────
-function renderDashboard(){
-  if(!DATA) return;
-  document.getElementById('dbManager').textContent = DATA.project?.manager || '未指定';
-  document.getElementById('dbCount').textContent = `${DATA.tasks?.length || 0} 項任務`;
-  document.getElementById('dbUpdated').textContent = DATA.lastUpdated || '-';
+// ── 資料儲存 ───────────────────────────────────────────────────
+async function saveData(){
+  const token = getToken();
+  if(!token){ showSaveBar('請先設定 GitHub Token','fail'); return; }
+
+  showSaveBar('儲存中…','saving');
+  try {
+    const url = apiUrl(currentId);
+    const metaRes = await fetch(url, {
+      headers:{ 'Authorization':'token '+token, 'Accept':'application/vnd.github.v3+json' }
+    });
+    if(!metaRes.ok) throw new Error('取得檔案資訊失敗，請確認 Token 是否正確');
+    const meta = await metaRes.json();
+
+    DATA.lastUpdated = new Date().toISOString().slice(0,10);
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(DATA, null, 2))));
+
+    const putRes = await fetch(url, {
+      method:'PUT',
+      headers:{ 'Authorization':'token '+token, 'Content-Type':'application/json', 'Accept':'application/vnd.github.v3+json' },
+      body: JSON.stringify({ message:'更新甘特圖資料 '+DATA.lastUpdated, content, sha: meta.sha })
+    });
+    if(!putRes.ok) throw new Error('寫入失敗 ('+putRes.status+')');
+    showSaveBar('✅ 已儲存，請稍等 1 分鐘後重新整理','ok');
+    renderPage();
+  } catch(e) {
+    showSaveBar('❌ ' + e.message, 'fail');
+  }
 }
 
-// ── 渲染主要明細表格 (加入排序上移/下移按鈕) ───────────────────
-function renderTable(){
-  const tbody = document.getElementById('taskTableBody');
-  tbody.innerHTML = '';
-  if(!DATA || !DATA.tasks || DATA.tasks.length === 0){
-    tbody.innerHTML = `<tr><td colspan="6" class="text-center">此專案目前尚無工作項目。</td></tr>`;
-    return;
+// ── 新增專案 ───────────────────────────────────────────────────
+async function createProject(name){
+  const token = getToken();
+  if(!token){ showSaveBar('請先設定 GitHub Token','fail'); return; }
+  if(!name){ showSaveBar('請輸入專案名稱','fail'); return; }
+
+  showSaveBar('建立中…','saving');
+  const newId = uid();
+  const emptyData = {
+    project:{ name, manager:'', note:'' },
+    tasks:[],
+    lastUpdated: new Date().toISOString().slice(0,10)
+  };
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(emptyData, null, 2))));
+
+  try {
+    const putRes = await fetch(apiUrl(newId), {
+      method:'PUT',
+      headers:{ 'Authorization':'token '+token, 'Content-Type':'application/json', 'Accept':'application/vnd.github.v3+json' },
+      body: JSON.stringify({ message:'新增專案：'+name, content })
+    });
+    if(!putRes.ok) throw new Error('建立專案檔案失敗 ('+putRes.status+')');
+
+    PROJECTS.push({ id: newId, name });
+    await saveProjects();
+
+    renderProjSelect();
+    document.getElementById('projSelect').value = newId;
+    closeDrawer();
+    await loadData(newId);
+    showSaveBar('✅ 專案「'+name+'」已建立','ok');
+  } catch(e) {
+    showSaveBar('❌ ' + e.message, 'fail');
   }
+}
 
-  DATA.tasks.forEach((t, index) => {
-    const tr = document.createElement('tr');
-    
-    // 狀態 Badge 樣式
-    let sCls = 'badge-gray';
-    if(t.stat==='進行中') sCls='badge-blue';
-    if(t.stat==='已完成') sCls='badge-green';
-    if(t.stat==='延宕') sCls='badge-red';
+// ── 刪除專案 ───────────────────────────────────────────────────
+async function deleteProject(){
+  const token = getToken();
+  if(!token){ showSaveBar('請先設定 GitHub Token','fail'); return; }
+  if(PROJECTS.length <= 1){ showSaveBar('至少保留一個專案','fail'); return; }
 
-    // 排序與操作按鈕判定 (非管理員唯讀時隱藏按鈕)
-    const hCls = TOKEN ? '' : 'hidden';
-    const isFirst = index === 0 ? 'disabled' : '';
-    const isLast = index === DATA.tasks.length - 1 ? 'disabled' : '';
+  showSaveBar('刪除中…','saving');
+  try {
+    const metaRes = await fetch(apiUrl(currentId), {
+      headers:{ 'Authorization':'token '+token, 'Accept':'application/vnd.github.v3+json' }
+    });
+    if(metaRes.ok){
+      const meta = await metaRes.json();
+      await fetch(apiUrl(currentId), {
+        method:'DELETE',
+        headers:{ 'Authorization':'token '+token, 'Content-Type':'application/json', 'Accept':'application/vnd.github.v3+json' },
+        body: JSON.stringify({ message:'刪除專案', sha: meta.sha })
+      });
+    }
 
-    tr.innerHTML = `
-      <td>
-        <div class="action-cell">
-          <div class="sort-group ${hCls}">
-            <button class="btn-sort" onclick="moveTask(${index}, -1)" ${isFirst} title="上移">▲</button>
-            <button class="btn-sort" onclick="moveTask(${index}, 1)" ${isLast} title="下移">▼</button>
-          </div>
-          <button class="btn btn-light btn-icon ${hCls}" onclick="openItemModal('${t.id}')">✏️</button>
-          <button class="btn btn-danger btn-icon ${hCls}" onclick="showConfirm('確定要刪除此項目？', ()=>deleteItem('${t.id}'))">🗑️</button>
-          <span class="${TOKEN ? 'hidden' : ''}" style="color:#8a8886; font-size:11px">唯讀模式</span>
-        </div>
-      </td>
-      <td>
-        <div class="gantt-task-name">${escapeHtml(t.task)}</div>
-        <div style="font-size:11px; color:#605e5c">${escapeHtml(t.cont||'')}</div>
-      </td>
-      <td>${escapeHtml(t.asgn)}</td>
-      <td><span style="color:#0078d4; font-weight:500">${t.ps}</span> ~ <span style="color:#0078d4; font-weight:500">${t.pe}</span></td>
-      <td>${t.as ? `<span style="color:#107c41">${t.as} ~ ${t.ae||'進行中'}</span>` : '<span style="color:#a19f9d">-</span>'}</td>
-      <td><span class="badge ${sCls}">${t.stat}</span></td>
-    `;
-    tbody.appendChild(tr);
+    const deletedName = PROJECTS.find(p=>p.id===currentId)?.name || '';
+    PROJECTS = PROJECTS.filter(p=>p.id!==currentId);
+    await saveProjects();
+
+    currentId = PROJECTS[0].id;
+    renderProjSelect();
+    document.getElementById('projSelect').value = currentId;
+    closeDrawer();
+    await loadData(currentId);
+    showSaveBar('✅ 專案「'+deletedName+'」已刪除','ok');
+  } catch(e) {
+    showSaveBar('❌ ' + e.message, 'fail');
+  }
+}
+
+function showSaveBar(msg, type){
+  const el = document.getElementById('saveBar');
+  el.textContent = msg;
+  el.className = 'save-bar show ' + type;
+  if(type !== 'saving') setTimeout(()=>{ el.className='save-bar'; }, 4000);
+}
+
+// ── 渲染主頁面 ─────────────────────────────────────────────────
+function renderPage(){
+  const p = DATA.project;
+  const tasks = DATA.tasks;
+
+  tasks.forEach(t => {
+    t.stat = getStatus(t);
   });
-}
 
-// ── 排序核心邏輯 ───────────────────────────────────────────────
-async function moveTask(index, direction) {
-  if (!TOKEN || !DATA || !DATA.tasks) return;
-  const targetIndex = index + direction;
-  if (targetIndex < 0 || targetIndex >= DATA.tasks.length) return;
+  const proj = PROJECTS.find(x=>x.id===currentId);
+  if(proj && p.name) proj.name = p.name;
+  renderProjSelect();
+  document.getElementById('projSelect').value = currentId;
 
-  // 陣列元素位置互換
-  const temp = DATA.tasks[index];
-  DATA.tasks[index] = DATA.tasks[targetIndex];
-  DATA.tasks[targetIndex] = temp;
+  document.title = p.name || '專案甘特圖';
+  document.getElementById('hTitle').textContent = p.name || '（未命名專案）';
+  document.getElementById('hMeta').textContent =
+    (p.manager ? '👤 '+p.manager : '') + (p.note ? '　💬 '+p.note : '');
+  document.getElementById('hRight').innerHTML =
+    '📋 共 '+tasks.length+' 項工作<br>🗓️ 更新：'+(DATA.lastUpdated||'—');
 
-  // 即時重新渲染並寫回儲存庫
-  renderTable();
-  renderGantt();
-  await saveData();
-  showToast('項目順序調整成功並已同步雲端！');
-}
+  const tok = getToken();
+  isAdmin = !!tok;
+  document.getElementById('adminBadge').classList.toggle('show', isAdmin);
+  document.getElementById('adminLabel').textContent = isAdmin ? '管理模式' : 'Admin';
+  document.getElementById('btnAdminOpen').style.borderColor = isAdmin ? '#fff' : 'rgba(255,255,255,.3)';
 
-// ── 渲染甘特圖 ─────────────────────────────────────────────────
-function renderGantt(){
-  const container = document.getElementById('ganttContainer');
-  container.innerHTML = '';
-  if(!DATA || !DATA.tasks || DATA.tasks.length === 0){
-    container.innerHTML = `<div style="padding:20px; text-align:center; color:#605e5c">尚無時間資料可產出甘特圖</div>`;
-    return;
+  const done=tasks.filter(t=>t.stat.includes('已完成')).length;
+  const prog=tasks.filter(t=>t.stat.includes('進行中')).length;
+  const over=tasks.filter(t=>t.stat.includes('已延誤')).length;
+  const pend=tasks.filter(t=>t.stat.includes('未開始')).length;
+
+  const addBtnHtml = isAdmin ? '<button class="btn btn-p btn-sm" id="btnAddRow">＋ 新增工作</button>' : '';
+  const adminThHtml = isAdmin ? '<th>操作</th>' : '';
+  let tbodyHtml;
+  if(tasks.length === 0){
+    tbodyHtml = '<tr><td colspan="'+(isAdmin?10:9)+'" style="text-align:center;padding:28px;color:#a19f9d">尚無工作項目</td></tr>';
+  } else {
+    tbodyHtml = tasks.map(function(t,i){
+      const editTd = isAdmin
+        ? '<td style="white-space:nowrap">'
+          + '<button class="btn btn-o btn-sm" data-edit="'+t.id+'">✏️</button>'
+          + '<button class="btn btn-d btn-sm" style="margin-left:3px" data-del="'+t.id+'">🗑️</button>'
+          + '</td>'
+        : '';
+      return '<tr>'
+        +'<td style="color:#a19f9d">'+(i+1)+'</td>'
+        +'<td><strong>'+esc(t.task)+'</strong></td>'
+        +'<td style="color:#605e5c;font-size:12px">'+(esc(t.cont)||'—')+'</td>'
+        +'<td>'+(t.ps||'—')+'</td><td>'+(t.pe||'—')+'</td>'
+        +'<td>'+(t.as||'—')+'</td><td>'+(t.ae||'—')+'</td>'
+        +'<td>'+esc(t.asgn)+'</td>'
+        +'<td><span class="badge '+bc(t.stat)+'">'+t.stat+'</span></td>'
+        +editTd
+        +'</tr>';
+    }).join('');
   }
 
-  // 算出時間邊界
-  let minD = null, maxD = null;
-  DATA.tasks.forEach(t=>{
-    const arr = [t.ps, t.pe, t.as, t.ae].filter(Boolean);
-    arr.forEach(dStr=>{
-      const d = new Date(dStr);
-      if(!isNaN(d)){
-        if(!minD || d < minD) minD = d;
-        if(!maxD || d > maxD) maxD = d;
+  document.getElementById('mainContent').innerHTML =
+    '<div class="content">'
+    +'<div class="stats">'
+    +'<div class="stat s1"><div class="stat-n">'+done+'</div><div class="stat-l">✅ 已完成</div></div>'
+    +'<div class="stat s2"><div class="stat-n">'+prog+'</div><div class="stat-l">🔄 進行中</div></div>'
+    +'<div class="stat s3"><div class="stat-n">'+over+'</div><div class="stat-l">⚠️ 已延誤</div></div>'
+    +'<div class="stat s4"><div class="stat-n">'+pend+'</div><div class="stat-l">⏳ 未開始</div></div>'
+    +'</div>'
+    +'<div class="gcrd">'
+    +'<div class="gtb"><span class="gtb-title">📊 自動產出甘特圖</span>'
+    +'<div class="gleg">'
+    +'<div class="gli"><div class="glb" style="background:#c7e0f4"></div>預計時程</div>'
+    +'<div class="gli"><div class="glb" style="background:#107c10"></div>已完成</div>'
+    +'<div class="gli"><div class="glb" style="background:#0078d4"></div>進行中</div>'
+    +'<div class="gli"><div class="glb" style="background:#d13438"></div>已延誤</div>'
+    +'<div class="gli"><div class="glb" style="background:#ffb900"></div>未開始</div>'
+    +'</div></div>'
+    +'<div class="gscroll">'
+    +'<div class="gantt-left"><div id="ganttLeft"></div></div>'
+    +'<div class="gantt-right"><div id="ganttRight"></div></div>'
+    +'</div></div>'
+    +'<div class="tcard"><div class="tbar">'
+    +'<span class="tbar-title">📋 工作項目清單</span>'
+    +addBtnHtml
+    +'</div>'
+    +'<table><thead><tr>'
+    +'<th>#</th><th>工作項目</th><th>工作內容說明</th>'
+    +'<th>預計開始</th><th>預計結束</th>'
+    +'<th>實際開始</th><th>實際結束</th>'
+    +'<th>負責人</th><th>狀態</th>'
+    +adminThHtml
+    +'</tr></thead><tbody>'
+    +tbodyHtml
+    +'</tbody></table></div>'
+    +'</div>';
+
+  document.getElementById('btnAddRow')?.addEventListener('click', ()=>openItemModal());
+  document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>openItemModal(b.dataset.edit)));
+  document.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+    showConfirm('確定要刪除此工作項目嗎？', ()=>deleteItem(b.dataset.del));
+  }));
+
+  setTimeout(()=>drawGantt(tasks), 30);
+}
+
+function bc(s){
+  if(s.includes('已完成'))  return 'bd';
+  if(s.includes('進行中'))return 'bp';
+  if(s.includes('已延誤'))  return 'bo';
+  if(s.includes('未開始'))return 'bn';
+  return 'bu';
+}
+
+// ── 甘特圖繪製 ─────────────────────────────────────────────────
+function drawGantt(tasks){
+  const elL = document.getElementById('ganttLeft');
+  const elR = document.getElementById('ganttRight');
+  if(!elL||!elR) return;
+  const noData = s => { elL.innerHTML=''; elR.innerHTML=`<div style="padding:20px;color:#605e5c;font-size:13px">${s}</div>`; };
+  if(!tasks.length){ noData('尚無工作項目資料'); return; }
+  try {
+    const allD=[];
+    tasks.forEach(t=>{ ['ps','pe','as','ae'].forEach(k=>{ if(t[k]) allD.push(new Date(t[k])); }); });
+    if(!allD.length){ noData('請填寫日期資料以產生甘特圖'); return; }
+
+    let mn=new Date(Math.min(...allD)), mx=new Date(Math.max(...allD));
+    mn=new Date(mn.getFullYear(),mn.getMonth(),1);
+    mx=new Date(mx.getFullYear(),mx.getMonth()+2,1);
+    const td=new Date(); td.setHours(0,0,0,0);
+
+    const days=Math.ceil((mx-mn)/864e5);
+    const LW=190,RH=44,HH=54,BH=13,BY1=8,BY2=25;
+    const vw=(elR.parentElement.offsetWidth||900)-LW;
+    const DW=Math.max(4,Math.min(16,(vw-16)/days));
+    const CW=days*DW,SH=HH+tasks.length*RH+6;
+    const toX=d=>Math.round((new Date(d)-mn)/864e5)*DW;
+    
+    const clr=(s,actual)=>{
+      if(!actual) return '#c7e0f4'; 
+      if(s.includes('已完成'))  return '#107c10';
+      if(s.includes('進行中'))return '#0078d4';
+      if(s.includes('已延誤'))  return '#d13438'; 
+      if(s.includes('未開始'))return '#ffb900';
+      return '#a19f9d';
+    };
+
+    let L=`<svg xmlns="http://www.w3.org/2000/svg" width="${LW}" height="${SH}" style="font-family:'Segoe UI',Arial,sans-serif;display:block">`;
+    L+=`<rect width="${LW}" height="${SH}" fill="#f8f7f6"/>`;
+    L+=`<rect x="0" y="0" width="${LW}" height="${HH}" fill="#f0f6ff"/>`;
+    L+=`<line x1="0" y1="${HH}" x2="${LW}" y2="${HH}" stroke="#c8c6c4" stroke-width="2"/>`;
+    L+=`<text x="${LW/2}" y="${HH/2+5}" text-anchor="middle" font-size="12" font-weight="700" fill="#323130">工作項目 (欄位固定)</text>`;
+    
+    tasks.forEach((t,i)=>{
+      const y=HH+i*RH;
+      L+=`<rect x="0" y="${y}" width="${LW}" height="${RH}" fill="${i%2?'#f3f2f1':'#f8f7f6'}"/>`;
+      L+=`<line x1="0" y1="${y+RH}" x2="${LW}" y2="${y+RH}" stroke="#e1dfdd" stroke-width="1"/>`;
+      L+=`<text x="10" y="${y+RH/2+4}" font-size="10" fill="#a19f9d">${i+1}</text>`;
+      const tl=t.task.length>14?t.task.slice(0,13)+'…':t.task;
+      L+=`<text x="24" y="${y+16}" font-size="12" font-weight="600" fill="#201f1e">${esc(tl)}</text>`;
+      L+=`<text x="24" y="${y+31}" font-size="10" fill="#605e5c">${esc(t.asgn)}</text>`;
+    });
+    L+=`<line x1="${LW-1}" y1="0" x2="${LW-1}" y2="${SH}" stroke="#c8c6c4" stroke-width="2"/>`;
+    L+='</svg>';
+    elL.innerHTML=L;
+
+    const RW=CW+16;
+    let R=`<svg xmlns="http://www.w3.org/2000/svg" width="${RW}" height="${SH}" style="font-family:'Segoe UI',Arial,sans-serif;display:block">`;
+    R+=`<rect width="${RW}" height="${SH}" fill="#fff"/>`;
+    tasks.forEach((_,i)=>{ R+=`<rect x="0" y="${HH+i*RH}" width="${RW}" height="${RH}" fill="${i%2?'#f8f7f6':'#fff'}"/>`; });
+    
+    let c=new Date(mn);
+    while(c<mx){
+      const n=new Date(c.getFullYear(),c.getMonth()+1,1);
+      R+=`<line x1="${toX(c)}" y1="${HH}" x2="${toX(c)}" y2="${SH}" stroke="#c8c6c4" stroke-width="1"/>`;
+      c=n;
+    }
+    let w=new Date(mn); while(w.getDay()!==1) w.setDate(w.getDate()+1);
+    while(w<mx){
+      R+=`<line x1="${toX(w)}" y1="${HH}" x2="${toX(w)}" y2="${SH}" stroke="#edebe9" stroke-width="1"/>`;
+      w.setDate(w.getDate()+7);
+    }
+    R+=`<rect x="0" y="0" width="${RW}" height="${HH}" fill="#f0f6ff"/>`;
+    R+=`<line x1="0" y1="${HH}" x2="${RW}" y2="${HH}" stroke="#c8c6c4" stroke-width="2"/>`;
+    
+    c=new Date(mn);
+    while(c<mx){
+      const n=new Date(c.getFullYear(),c.getMonth()+1,1);
+      const x1=toX(c), mw=toX(n<mx?n:mx)-x1;
+      R+=`<line x1="${x1}" y1="0" x2="${x1}" y2="${HH}" stroke="#c8c6c4" stroke-width="1"/>`;
+      R+=`<text x="${x1+mw/2}" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#0078d4">${c.getFullYear()}/${c.getMonth()+1}</text>`;
+      c=n;
+    }
+    w=new Date(mn); while(w.getDay()!==1) w.setDate(w.getDate()+1);
+    while(w<mx){
+      const wx=toX(w);
+      R+=`<line x1="${wx}" y1="26" x2="${wx}" y2="${HH}" stroke="#d0d0d0" stroke-width="1"/>`;
+      R+=`<text x="${wx+(DW*7)/2}" y="42" text-anchor="middle" font-size="9" fill="#605e5c">${w.getMonth()+1}/${w.getDate()}</text>`;
+      w.setDate(w.getDate()+7);
+    }
+    R+=`<line x1="0" y1="26" x2="${RW}" y2="26" stroke="#c8c6c4" stroke-width="1"/>`;
+    
+    tasks.forEach((t,i)=>{
+      const y=HH+i*RH;
+      R+=`<line x1="0" y1="${y+RH}" x2="${RW}" y2="${y+RH}" stroke="#edebe9" stroke-width="1"/>`;
+      if(t.ps&&t.pe){
+        const x1=toX(t.ps),bw=Math.max(toX(t.pe)-x1,DW);
+        R+=`<rect x="${x1}" y="${y+BY1}" width="${bw}" height="${BH}" rx="3" fill="${clr(t.stat,false)}"/>`;
+        if(bw>28) R+=`<text x="${x1+bw/2}" y="${y+BY1+9}" text-anchor="middle" font-size="8" fill="#005a9e">預計</text>`;
+      }
+      if(t.as){
+        const ed=t.ae||td.toISOString().slice(0,10);
+        const x1=toX(t.as),bw=Math.max(toX(ed)-x1,DW),cl=clr(t.stat,true);
+        R+=`<rect x="${x1}" y="${y+BY2}" width="${bw}" height="${BH}" rx="3" fill="${cl}"/>`;
+        if(!t.ae) R+=`<line x1="${x1+bw}" y1="${y+BY2+6}" x2="${x1+bw+12}" y2="${y+BY2+6}" stroke="${cl}" stroke-width="3" stroke-dasharray="3,2"/>`;
+        if(bw>28) R+=`<text x="${x1+bw/2}" y="${y+BY2+9}" text-anchor="middle" font-size="8" fill="#fff">實際</text>`;
       }
     });
-  });
-
-  if(!minD){ minD = new Date(); maxD = new Date(); maxD.setDate(maxD.getDate()+60); }
-  
-  // 調整週次對齊邊界
-  const startDay = minD.getDay();
-  minD.setDate(minD.getDate() - (startDay === 0 ? 6 : startDay - 1)); 
-  const endDay = maxD.getDay();
-  maxD.setDate(maxD.getDate() + (endDay === 0 ? 0 : 7 - endDay));    
-
-  // 計算跨越的月份與週次
-  const weeks = [];
-  let curr = new Date(minD);
-  while(curr <= maxD){
-    weeks.push(new Date(curr));
-    curr.setDate(curr.getDate() + 7);
-  }
-
-  const monthsMap = {};
-  weeks.forEach(wD=>{
-    const mStr = `${wD.getFullYear()}年${wD.getMonth()+1}月`;
-    if(!monthsMap[mStr]) monthsMap[mStr] = 0;
-    monthsMap[mStr]++;
-  });
-
-  // 1. 建立甘特圖 Header 行
-  const wrapper = document.createElement('div');
-  wrapper.className = 'gantt-wrapper';
-  wrapper.style.setProperty('--total-weeks', weeks.length);
-
-  const hRow = document.createElement('div');
-  hRow.className = 'gantt-header-row';
-  
-  const lblColH = document.createElement('div');
-  lblColH.className = 'gantt-label-col-h';
-  lblColH.textContent = '工作項目 / 時程推進';
-  hRow.appendChild(lblColH);
-
-  const monthsH = document.createElement('div');
-  monthsH.className = 'gantt-months-h';
-
-  Object.keys(monthsMap).forEach(mKey=>{
-    const mBox = document.createElement('div');
-    mBox.className = 'gantt-month-box';
-    mBox.style.flex = `span ${monthsMap[mKey]}`;
-    mBox.style.width = `calc(100% / ${weeks.length} * ${monthsMap[mKey]})`;
     
-    let html = `<div>${mKey}</div><div class="gantt-weeks-sub">`;
-    for(let i=1; i<=monthsMap[mKey]; i++) html += `<div class="gantt-week-box">W</div>`;
-    html += `</div>`;
-    mBox.innerHTML = html;
-    monthsH.appendChild(mBox);
-  });
-  hRow.appendChild(monthsH);
-  wrapper.appendChild(hRow);
-
-  // 2. 建立甘特圖各任務時程條
-  const totalDays = weeks.length * 7;
-  const msInDay = 86400000;
-
-  DATA.tasks.forEach(t=>{
-    const r = document.createElement('div');
-    r.className = 'gantt-row';
-
-    const lbl = document.createElement('div');
-    lbl.className = 'gantt-label-col';
-    lbl.innerHTML = `<span class="gantt-task-name">${escapeHtml(t.task)}</span><span class="gantt-task-meta">👤 ${escapeHtml(t.asgn)}</span>`;
-    r.appendChild(lbl);
-
-    const tlCol = document.createElement('div');
-    tlCol.className = 'gantt-timeline-col';
-
-    const bCont = document.createElement('div');
-    bCont.className = 'gantt-bar-container';
-
-    // 繪製預計時程條
-    const pStart = new Date(t.ps);
-    const pEnd = new Date(t.pe);
-    const pLeftDays = Math.round((pStart - minD)/msInDay);
-    const pLenDays = Math.round((pEnd - pStart)/msInDay) + 1;
-    const pLeftPct = (pLeftDays / totalDays) * 100;
-    const pWidthPct = (pLenDays / totalDays) * 100;
-
-    const pBar = document.createElement('div');
-    pBar.className = 'gantt-bar bar-plan';
-    pBar.style.left = `${pLeftPct}%`;
-    pBar.style.width = `${pWidthPct}%`;
-    pBar.textContent = `預計: ${t.ps}~${t.pe}`;
-    pBar.title = `【預計】${t.task} (${t.ps} ~ ${t.pe})`;
-    bCont.appendChild(pBar);
-
-    // 繪製實際時程條 (如果存在)
-    if(t.as){
-      const aStart = new Date(t.as);
-      const aEnd = t.ae ? new Date(t.ae) : new Date(); 
-      const aLeftDays = Math.round((aStart - minD)/msInDay);
-      const aLenDays = Math.round((aEnd - aStart)/msInDay) + 1;
-      const aLeftPct = (aLeftDays / totalDays) * 100;
-      const aWidthPct = (aLenDays / totalDays) * 100;
-
-      const aBar = document.createElement('div');
-      aBar.className = 'gantt-bar bar-act';
-      aBar.style.left = `${aLeftPct}%`;
-      aBar.style.width = `${aWidthPct}%`;
-      aBar.textContent = `實際: ${t.as}~${t.ae||'進行中'}`;
-      aBar.title = `【實際】${t.task} (${t.as} ~ ${t.ae||'進行中'})`;
-      bCont.appendChild(aBar);
+    if(td>=mn&&td<=mx){
+      const tx=toX(td);
+      R+=`<line x1="${tx}" y1="${HH}" x2="${tx}" y2="${SH}" stroke="#d13438" stroke-width="2" stroke-dasharray="4,3"/>`;
+      R+=`<rect x="${tx-13}" y="${HH-17}" width="26" height="16" rx="8" fill="#d13438"/>`;
+      R+=`<text x="${tx}" y="${HH-6}" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">今日</text>`;
     }
-
-    tlCol.appendChild(bCont);
-    r.appendChild(tlCol);
-    wrapper.appendChild(r);
-  });
-
-  container.appendChild(wrapper);
-}
-
-// ── ADMIN 后台抽屉與權限控制 ────────────────────────────────────
-function toggleAdminDrawer(){
-  document.getElementById('drawerOverlay').classList.toggle('show');
-  document.getElementById('adminDrawer').classList.toggle('show');
-}
-
-function handleLogin(){
-  const val = document.getElementById('inputToken').value.trim();
-  if(!val){ alert('請輸入有效的 GitHub Token'); return; }
-  TOKEN = val;
-  localStorage.setItem('gantt_pat', TOKEN);
-  showAdminUI();
-  renderTable(); 
-  showToast('🔑 成功登入管理模式！已解鎖任務排序與編輯功能。');
-}
-
-function handleLogout(){
-  TOKEN = '';
-  localStorage.removeItem('gantt_pat');
-  document.getElementById('inputToken').value = '';
-  showAdminUI();
-  renderTable(); 
-  showToast('🚪 已安全登出管理員模式。');
-}
-
-function showAdminUI(){
-  if(TOKEN){
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('adminActions').classList.remove('hidden');
-    document.getElementById('btnAddTask').classList.remove('hidden');
-    document.getElementById('btnAdminToggle').textContent = '🔓 Admin (已登入)';
-    document.getElementById('btnAdminToggle').style.background = '#107c41';
-    document.getElementById('btnAdminToggle').style.color = '#fff';
-  }else{
-    document.getElementById('loginForm').classList.remove('hidden');
-    document.getElementById('adminActions').classList.add('hidden');
-    document.getElementById('btnAddTask').classList.add('hidden');
-    document.getElementById('btnAdminToggle').textContent = '🔒 Admin';
-    document.getElementById('btnAdminToggle').style.background = '';
-    document.getElementById('btnAdminToggle').style.color = '';
+    R+='</svg>';
+    elR.innerHTML=R;
+  } catch(e) {
+    elL.innerHTML='';
+    elR.innerHTML=`<div style="padding:20px;color:#d13438">甘特圖錯誤：${e.message}</div>`;
   }
 }
 
-// ── 寫回 GitHub 雲端資料庫 (核心核心) ───────────────────────────
-async function saveData(){
-  if(!TOKEN){ alert('目前為唯讀模式，無法儲存'); return; }
-  DATA.lastUpdated = new Date().toISOString().split('T')[0];
-  
-  try{
-    // 1. 取得現有檔案的 SHA 雜湊值
-    const getRes = await fetch(`${apiBase}/${CURRENT_PROJECT_ID}.json`, {
-      headers: { 'Authorization': `token ${TOKEN}` }
-    });
-    if(!getRes.ok) throw new Error('獲取雲端 SHA 失敗');
-    const fData = await getRes.json();
-    const sha = fData.sha;
-
-    // 2. 封裝新資料上傳
-    const putRes = await fetch(`${apiBase}/${CURRENT_PROJECT_ID}.json`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `Update task order/data in ${CURRENT_PROJECT_ID}.json`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(DATA, null, 2)))),
-        sha: sha
-      })
-    });
-    if(!putRes.ok) throw new Error('同步 GitHub 失敗，請檢查 Token 權限是否包含 repo 勾選');
-    
-    renderDashboard();
-  }catch(e){
-    alert(`儲存失敗：${e.message}`);
-  }
+// ── Admin Drawer ───────────────────────────────────────────────
+function openDrawer(){
+  const tok = getToken();
+  document.getElementById('tokenInput').value = tok;
+  document.getElementById('tokenStatus').textContent = tok ? '✅ 已登入 Admin 模式' : '尚未登入，請輸入 GitHub Token';
+  document.getElementById('tokenStatus').className = 'token-status ' + (tok ? 'token-ok' : 'token-no');
+  document.getElementById('dProjName').value = DATA.project.name||'';
+  document.getElementById('dProjMgr').value  = DATA.project.manager||'';
+  document.getElementById('dProjNote').value = DATA.project.note||'';
+  document.getElementById('dNewProjName').value = '';
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerBg').classList.add('show');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerBg').classList.remove('show');
 }
 
-// ── 專案基本設定儲存 ─────────────────────────────────────────────
-async function saveProjectMeta(){
-  if(!DATA) return;
-  if(!DATA.project) DATA.project = {};
-  DATA.project.manager = document.getElementById('editManager').value.trim();
-  DATA.project.note = document.getElementById('editNote').value.trim();
+document.getElementById('btnAdminOpen').addEventListener('click', openDrawer);
+document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+document.getElementById('drawerBg').addEventListener('click', closeDrawer);
+
+document.getElementById('btnTokenSave').addEventListener('click', ()=>{
+  const t = document.getElementById('tokenInput').value.trim();
+  if(!t){ alert('請輸入 Token'); return; }
+  setToken(t);
+  document.getElementById('tokenStatus').textContent = '✅ 已登入 Admin 模式';
+  document.getElementById('tokenStatus').className = 'token-status token-ok';
+  closeDrawer();
+  renderPage();
+});
+document.getElementById('btnTokenClear').addEventListener('click', ()=>{
+  setToken('');
+  document.getElementById('tokenInput').value='';
+  document.getElementById('tokenStatus').textContent='已登出';
+  document.getElementById('tokenStatus').className='token-status token-no';
+  closeDrawer();
+  renderPage();
+});
+
+document.getElementById('btnCreateProj').addEventListener('click', ()=>{
+  const name = document.getElementById('dNewProjName').value.trim();
+  if(!name){ document.getElementById('dNewProjName').focus(); return; }
+  showConfirm(`確定要建立新專案「${name}」嗎？`, ()=>createProject(name));
+});
+
+document.getElementById('btnProjSave').addEventListener('click', async ()=>{
+  if(!getToken()){ showSaveBar('請先設定 GitHub Token','fail'); return; }
+  DATA.project.name    = document.getElementById('dProjName').value.trim();
+  DATA.project.manager = document.getElementById('dProjMgr').value.trim();
+  DATA.project.note    = document.getElementById('dProjNote').value.trim();
+  closeDrawer();
   await saveData();
-  renderDashboard();
-  showToast('專案主資訊更新完成！');
-  toggleAdminDrawer();
+  await saveProjects();
+});
+
+document.getElementById('btnDeleteProj').addEventListener('click', ()=>{
+  if(PROJECTS.length <= 1){ showSaveBar('至少保留一個專案','fail'); return; }
+  const name = DATA.project.name || currentId;
+  showConfirm(`確定要刪除專案「${name}」嗎？\n此操作無法復原！`, ()=>deleteProject());
+});
+
+document.getElementById('btnNewItem').addEventListener('click', ()=>{ closeDrawer(); openItemModal(); });
+
+// ── 專案切換 ───────────────────────────────────────────────────
+document.getElementById('projSelect').addEventListener('change', function(){
+  if(this.value !== currentId) loadData(this.value);
+});
+
+// ── 工作項目 Modal 控制 ─────────────────────────────────────────
+function openItemModal(id=null){
+  editId=id;
+  const t=id?DATA.tasks.find(x=>x.id===id):null;
+  document.getElementById('itemModalTitle').textContent=id?'編輯工作項目':'新增工作項目';
+  document.getElementById('iTask').value=t?.task||'';
+  document.getElementById('iAsgn').value=t?.asgn||'';
+  document.getElementById('iCont').value=t?.cont||'';
+  document.getElementById('iPS').value  =t?.ps||'';
+  document.getElementById('iPE').value  =t?.pe||'';
+  document.getElementById('iAS').value  =t?.as||'';
+  document.getElementById('iAE').value  =t?.ae||'';
+  
+  document.getElementById('iStat').value=t ? getStatus(t) : '⏳ 依日期自動判定';
+  
+  const err=document.getElementById('itemErr'); err.textContent=''; err.classList.remove('show');
+  document.getElementById('itemOverlay').classList.add('show');
+  setTimeout(()=>document.getElementById('iTask').focus(),100);
 }
+function closeItemModal(){ document.getElementById('itemOverlay').classList.remove('show'); }
 
-// ── 工作項目視窗操作 ─────────────────────────────────────────────
-function openItemModal(id = null){
-  editId = id;
-  const err = document.getElementById('itemErr');
-  err.textContent = ''; err.classList.remove('show');
-
-  if(id){
-    document.getElementById('modalTitle').textContent = '✏️ 編輯現有工作項目';
-    const t = DATA.tasks.find(x=>x.id === id);
-    document.getElementById('iTask').value = t.task;
-    document.getElementById('iAsgn').value = t.asgn;
-    document.getElementById('iCont').value = t.cont || '';
-    document.getElementById('iPS').value = t.ps;
-    document.getElementById('iPE').value = t.pe;
-    document.getElementById('iAS').value = t.as || '';
-    document.getElementById('iAE').value = t.ae || '';
-    document.getElementById('iStat').value = t.stat || '未開始';
-  }else{
-    document.getElementById('modalTitle').textContent = '➕ 新增全新工作項目';
-    document.getElementById('iTask').value = '';
-    document.getElementById('iAsgn').value = '';
-    document.getElementById('iCont').value = '';
-    document.getElementById('iPS').value = '';
-    document.getElementById('iPE').value = '';
-    document.getElementById('iAS').value = '';
-    document.getElementById('iAE').value = '';
-    document.getElementById('iStat').value = '未開始';
-  }
-  document.getElementById('itemModal').classList.add('show');
-}
-
-function closeItemModal(){ document.getElementById('itemModal').classList.remove('show'); }
+document.getElementById('btnCancelItem').addEventListener('click', closeItemModal);
+document.getElementById('itemOverlay').addEventListener('click', function(e){ if(e.target===this) closeItemModal(); });
 
 document.getElementById('btnSaveItem').addEventListener('click', async ()=>{
-  const task = document.getElementById('iTask').value.trim();
-  const asgn = document.getElementById('iAsgn').value.trim();
-  const ps = document.getElementById('iPS').value;
-  const pe = document.getElementById('iPE').value;
-  const err = document.getElementById('itemErr');
+  const task=document.getElementById('iTask').value.trim();
+  const asgn=document.getElementById('iAsgn').value.trim();
+  const ps  =document.getElementById('iPS').value;
+  const pe  =document.getElementById('iPE').value;
+  const as  =document.getElementById('iAS').value;
+  const ae  =document.getElementById('iAE').value;
+  const err =document.getElementById('itemErr');
   
-  if(!task || !asgn || !ps || !pe){
-    err.textContent = '❌ 請完整填寫：工作項目、負責人、預計開始/結束日期';
+  if(!task||!asgn||!ps||!pe){
+    err.textContent='請填寫必填欄位：工作項目、負責人、預計開始與結束日期';
     err.classList.add('show'); return;
   }
+  
+  if(pe < ps){
+    alert('【不接受的時程設定】\n預計結束日期不能小於預計開始日期！\n請維護者重新調整確認。');
+    return;
+  }
+  
+  if(as && ae && ae < as){
+    alert('【不接受的時程設定】\n實際結束日期不能小於實際開始日期！\n請維護者重新調整確認。');
+    return;
+  }
+  
   err.classList.remove('show');
-
-  const data = { 
-    task, asgn, cont: document.getElementById('iCont').value.trim(),
-    ps, pe, as: document.getElementById('iAS').value, ae: document.getElementById('iAE').value,
-    stat: document.getElementById('iStat').value 
-  };
-
+  
+  const tempTask = { task, asgn, cont:document.getElementById('iCont').value, ps, pe, as, ae };
+  const stat = getStatus(tempTask);
+  const data = { ...tempTask, stat };
+  
   if(editId){ 
-    Object.assign(DATA.tasks.find(x=>x.id === editId), data); 
+    Object.assign(DATA.tasks.find(x=>x.id===editId), data); 
   } else { 
     DATA.tasks.push({id: Date.now().toString(36)+Math.random().toString(36).slice(2,5), ...data}); 
   }
   
   closeItemModal();
-  renderTable();
-  renderGantt();
   await saveData();
-  showToast('工作清單儲存並同步成功！');
 });
 
+// ── 刪除工作項目 ───────────────────────────────────────────────
 function deleteItem(id){
-  DATA.tasks = DATA.tasks.filter(t=>t.id !== id);
-  renderTable();
-  renderGantt();
+  DATA.tasks = DATA.tasks.filter(t=>t.id!==id);
   saveData();
-  showToast('項目已成功刪除。');
 }
 
-// ── 多專案清單控制視窗 ───────────────────────────────────────────
-function openProjModal(){
-  document.getElementById('newProjName').value = '';
-  const err = document.getElementById('projErr');
-  err.textContent = ''; err.classList.remove('show');
-  renderProjListItems();
-  document.getElementById('projModal').classList.add('show');
-}
-function closeProjModal(){ document.getElementById('projModal').classList.remove('show'); }
-
-function renderProjListItems(){
-  const c = document.getElementById('projListContainer');
-  c.innerHTML = '';
-  PROJECTS_INDEX.projects.forEach(p=>{
-    const d = document.createElement('div');
-    d.style = "display:flex; justify-content:between; align-items:center; padding:6px 10px; background:#faf9f8; border:1px solid #edebe9; border-radius:4px; gap:10px";
-    
-    // 防呆：預設 data 庫不允許被刪除
-    const isCore = p.id === 'data';
-    
-    d.innerHTML = `
-      <span style="font-weight:500; flex-grow:1; color:${isCore?'#a19f9d':''}">📁 ${escapeHtml(p.name)} (${p.id}.json) ${isCore?'[系統預設]':''}</span>
-      <button class="btn btn-danger btn-icon" style="padding:2px 6px; font-size:11px" ${isCore?'disabled':''} 
-        onclick="showConfirm('注意！這將連同雲端的 ${p.id}.json 檔案一併完全刪除，確定嗎？', ()=>deleteProjectSubmit('${p.id}'))">刪除</button>
-    `;
-    c.appendChild(d);
-  });
-}
-
-async function createNewProjectSubmit(){
-  const name = document.getElementById('newProjName').value.trim();
-  const err = document.getElementById('projErr');
-  if(!name){ err.textContent='請填寫專案名稱'; err.classList.add('show'); return; }
-  
-  const id = 'proj_' + Date.now().toString(36);
-  
-  try{
-    // 1. 在 GitHub 上為新專案建立一個專屬的初始空 JSON 檔
-    const emptyModel = { project: { name: name, manager: "", note: "" }, tasks: [], lastUpdated: new Date().toISOString().split('T')[0] };
-    const createRes = await fetch(`${apiBase}/${id}.json`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `Create database for new project ${name}`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(emptyModel, null, 2))))
-      })
-    });
-    if(!createRes.ok) throw new Error('無法於雲端建立專案 JSON 檔案');
-
-    // 2. 寫入專案索引 projects.json
-    PROJECTS_INDEX.projects.push({ id: id, name: name });
-    PROJECTS_INDEX.lastUpdated = new Date().toISOString().split('T')[0];
-    
-    const idxGet = await fetch(`${apiBase}/projects.json`, { headers: { 'Authorization': `token ${TOKEN}` } });
-    const idxF = await idxGet.json();
-    
-    await fetch(`${apiBase}/projects.json`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `Register project ${name} to index`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(PROJECTS_INDEX, null, 2)))),
-        sha: idxF.sha
-      })
-    });
-
-    showToast(`🎉 成功建立新專案庫：${name}`);
-    closeProjModal();
-    renderProjectSelector();
-    await switchProject(id);
-  }catch(e){
-    err.textContent = `建立失敗: ${e.message}`; err.classList.add('show');
-  }
-}
-
-async function deleteProjectSubmit(id){
-  try{
-    // 1. 刪除雲端對應的 json 檔案
-    const getFile = await fetch(`${apiBase}/${id}.json`, { headers: { 'Authorization': `token ${TOKEN}` } });
-    if(getFile.ok){
-      const f = await getFile.json();
-      await fetch(`${apiBase}/${id}.json`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: `Delete project file ${id}.json`, sha: f.sha })
-      });
-    }
-
-    // 2. 自索引中移出
-    PROJECTS_INDEX.projects = PROJECTS_INDEX.projects.filter(p=>p.id !== id);
-    const idxGet = await fetch(`${apiBase}/projects.json`, { headers: { 'Authorization': `token ${TOKEN}` } });
-    const idxF = await idxGet.json();
-    await fetch(`${apiBase}/projects.json`, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `Unregister project ${id} from index`,
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(PROJECTS_INDEX, null, 2)))),
-        sha: idxF.sha
-      })
-    });
-
-    showToast(`專案已完全移除。`);
-    closeProjModal();
-    renderProjectSelector();
-    await loadProjectsIndex();
-  }catch(e){
-    alert(`刪除失敗: ${e.message}`);
-  }
-}
-
-// ── Confirm 視窗驅動 ────────────────────────────────────────────
+// ── Confirm ────────────────────────────────────────────────────
 function showConfirm(msg, cb){
-  document.getElementById('confirmMsg').textContent = msg;
-  confirmCb = cb;
+  document.getElementById('confirmMsg').textContent=msg;
+  confirmCb=cb;
   document.getElementById('confirmOverlay').classList.add('show');
 }
 document.getElementById('btnConfNo').addEventListener('click', ()=>{ document.getElementById('confirmOverlay').classList.remove('show'); });
 document.getElementById('btnConfYes').addEventListener('click', ()=>{
   document.getElementById('confirmOverlay').classList.remove('show');
-  if(confirmCb) confirmCb();
+  if(confirmCb){ confirmCb(); confirmCb=null; }
 });
 
-// 安全 XSS 字串過濾
-function escapeHtml(str) {
-  if(!str) return '';
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
+// ── 啟動 ───────────────────────────────────────────────────────
+(async ()=>{
+  await loadProjects();
+  await loadData(currentId);
+})();
 </script>
 </body>
 </html>
