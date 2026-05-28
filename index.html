@@ -84,9 +84,9 @@ tbody tr:last-child td{border-bottom:none}
 
 /* ── Buttons ── */
 .btn{border:1px solid transparent;border-radius:2px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px;font-family:inherit;line-height:1;user-select:none}
-.btn-p{background:#0078d4;color:#fff;border-color:#0078d4}\.btn-p:hover{background:#106ebe}
-.btn-o{background:#fff;color:#323130;border-color:#8a8886}\.btn-o:hover{background:#f3f2f1}
-.btn-d{background:#fff;color:#a4262c;border:1px solid #d13438}\.btn-d:hover{background:#fde7e9}
+.btn-p{background:#0078d4;color:#fff;border-color:#0078d4}.btn-p:hover{background:#106ebe}
+.btn-o{background:#fff;color:#323130;border-color:#8a8886}.btn-o:hover{background:#f3f2f1}
+.btn-d{background:#fff;color:#a4262c;border:1px solid #d13438}.btn-d:hover{background:#fde7e9}
 .btn-sm{padding:4px 8px;font-size:12px}
 .btn-sort{padding:2px 4px;font-size:11px;line-height:1;background:#fff;border:1px solid #c8c6c4;border-radius:2px;cursor:pointer;margin-right:2px}
 .btn-sort:hover{background:#edebe9}
@@ -615,6 +615,7 @@ function renderPage(){
 }
 
 function bc(s){
+  if(s.includes('Alice'))  return 'bu'; // 防呆
   if(s.includes('已完成'))  return 'bd';
   if(s.includes('進行中'))return 'bp';
   if(s.includes('已延誤'))  return 'bo';
