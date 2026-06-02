@@ -710,7 +710,7 @@ function drawGantt(tasks){
     while(w<mx){
       const wx=toX(w);
       R+=`<line x1="${wx}" y1="26" x2="${wx}" y2="${HH}" stroke="#d0d0d0" stroke-width="1"/>`;
-      R+=`<text x="${wx+(DW*7)/2}" y="42" text-anchor="middle" font-size="9" fill="#605e5c">${w.getMonth()+1}/${w.getDate()}</text>`;
+      R+=`<text x="${wx+(DW*7)/2}" y="42" text-anchor="middle" font-size="12" fill="#605e5c">${w.getMonth()+1}/${w.getDate()}</text>`;
       w.setDate(w.getDate()+7);
     }
     R+=`<line x1="0" y1="26" x2="${RW}" y2="26" stroke="#c8c6c4" stroke-width="1"/>`;
