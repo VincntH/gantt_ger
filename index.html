@@ -45,7 +45,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;color:#323130;backgr
 .err-box{background:#fde7e9;border:1px solid #f4b8bb;border-radius:3px;padding:166px 20px;color:#a4262c;max-width:520px;margin:40px auto;text-align:center;line-height:1.6}
 
 /* ── Content ── */
-.content{padding:18px 24px;max-width:1600px}
+.content{padding:18px 24px;max-width:1600px;margin:0 auto;height:calc(100vh - 56px);display:flex;flex-direction:column;}
 .stats{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .stat{background:#fff;border-radius:3px;padding:11px 16px;flex:1;min-width:100px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-top:3px solid #e1dfdd;text-align:center}
 .stat.s1{border-top-color:#107c10}.stat.s2{border-top-color:#0078d4}
@@ -54,18 +54,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:14px;color:#323130;backgr
 .stat-l{font-size:11px;color:#605e5c;margin-top:3px}
 
 /* ── Gantt ── */
-.gcrd{background:#fff;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden;margin-bottom:16px}
+.gcrd{background:#fff;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:16px;display:flex;flex-direction:column;flex:1;min-height:0;}
 .gtb{padding:10px 16px;border-bottom:1px solid #e1dfdd;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .gtb-title{font-size:13px;font-weight:700;color:#201f1e}
 .gleg{display:flex;flex-wrap:wrap;gap:12px;margin-left:auto}
 .gli{display:flex;align-items:center;gap:5px;font-size:11px;color:#605e5c}
 .glb{width:20px;height:8px;border-radius:2px}
-.gscroll{display:flex;overflow:hidden}
+.gscroll{display:flex;overflow:hidden;flex:1;}
 .gantt-left{flex-shrink:0;overflow:hidden}
 .gantt-right{flex:1;overflow-x:auto}
 
 /* ── Table ── */
-.tcard{background:#fff;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:auto;margin-bottom:16px}
+.tcard{background:#fff;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:auto;margin-bottom:0;flex:1;min-height:0;}
 .tcard::-webkit-scrollbar {height:8px;width:8px}
 .tbar{padding:10px 16px;border-bottom:1px solid #e1dfdd;display:flex;align-items:center;justify-content:space-between}
 .tbar-title{font-size:13px;font-weight:700;color:#201f1e}
