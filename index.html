@@ -579,7 +579,6 @@ function renderPage(){
     +'</div>'
     +'<div class="gcrd">'
     +'<div class="gtb"><span class="gtb-title">📊 自動產出甘特圖</span>'
-    +'<div class="gtb"><span class="gtb-title">📊 專案甘特圖</span>'
     +'<div class="gleg">'
     +'<div class="gli"><div class="glb" style="background:#c7e0f4"></div>預計時程</div>'
     +'<div class="gli"><div class="glb" style="background:#107c10"></div>已完成</div>'
@@ -711,6 +710,7 @@ function drawGantt(tasks){
     while(w<mx){
       const wx=toX(w);
       R+=`<line x1="${wx}" y1="26" x2="${wx}" y2="${HH}" stroke="#d0d0d0" stroke-width="1"/>`;
+      R+=`<text x="${wx+(DW*7)/2}" y="42" text-anchor="middle" font-size="9" fill="#605e5c">${w.getMonth()+1}/${w.getDate()}</text>`;
       R+=`<text x="${wx+(DW*7)/2}" y="42" text-anchor="middle" font-size="12" fill="#605e5c">${w.getMonth()+1}/${w.getDate()}</text>`;
       w.setDate(w.getDate()+7);
     }
